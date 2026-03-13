@@ -119,12 +119,214 @@
         <div id="divMain" class="container-fluid py-5 d-flex justify-content-center align-items-center">
             <div class="row w-100 mt-5 justify-content-center">
                 <div class="col-lg-6 text-center">
-                    <h1 class="fw-bold mb-4">Benvenuto in Remember Me</h1>
+                    <h1 class="fw-bold mb-4">Mantieni vivo il ricordo con Remember Me</h1>
                     <p class="lead mb-4">
-                        Con la nostra app semplice ed intuitiva riuscirai a rimanere sempre in
-                        "contatto" con i tuoi cari
+                        Un modo semplice e digitale per ricordare le persone care.
+                        Scansiona un QR code, scopri la loro storia, lascia un messaggio e conserva i ricordi nel tempo.
                     </p>
                 </div>
+            </div>
+        </div>
+
+        <div id="divMain2" class="container py-2">
+            <div class="row mb-2">
+                <div class="col text-center">
+                    <h2 class="fw-bold">Come funziona</h2>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div id="ghost-number-1">
+                            <img src="../Img/Fantasma_1.png" alt="1" id="ghostCircle" class="img fluid" height="100px">
+                        </div>
+                        <div>
+                            <h5 class="fw-bold">Scansiona il QR code</h5>
+                            <p>
+                                Utilizza il tuo smartphone per scansionare il QR code
+                                collegato alla persona che vuoi ricordare.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div id="ghost-number-2" class="d-flex align-items-center gap-3 mb-3">
+                            <img src="../Img/Fantasma_2.png" alt="2" id="ghostCircle" class="img fluid" height="100px">
+                        </div>
+                        <div>
+                            <h5 class="fw-bold">Scopri la sua storia</h5>
+                            <p>
+                                Visualizza foto, ricordi e informazioni dedicate
+                                alla persona commemorata.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div id="ghost-number-3" class="d-flex align-items-center gap-3 mb-3">
+                            <img src="../Img/Fantasma_3.png" alt="3" id="ghostCircle" class="img fluid" height="100px">
+                        </div>
+                        <div>
+                            <h5 class="fw-bold">Lascia un ricordo</h5>
+                            <p>
+                                Scrivi un messaggio o condividi un pensiero
+                                per mantenere vivo il ricordo nel tempo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="../Img/phone.png" class="img-fluid" alt="Phone">
+                </div>
+            </div>
+        </div>
+
+        <!-- QR CODE SECTION - NUOVA SEZIONE DINAMICA -->
+        <div class="qr-section container py-5">
+            <div class="row mb-4 text-center">
+                <div class="col">
+                    <h2 class="fw-bold">Scarica l'App Remember Me</h2>
+                    <p class="lead">Scegli la piattaforma e scansiona il QR code per il download diretto</p>
+                </div>
+            </div>
+            
+            <!-- Platform Selector Buttons -->
+            <div class="platform-selector">
+                <button class="platform-btn active" id="selectIosBtn">
+                    <img src="../Img/apple-icon.svg" alt="iOS" class="platform-icon">
+                    <span>iOS</span>
+                </button>
+                <button class="platform-btn" id="selectAndroidBtn">
+                    <img src="../Img/google-play-icon.svg" alt="Android" class="platform-icon">
+                    <span>Android</span>
+                </button>
+            </div>
+
+            <!-- Store Buttons -->
+            <div class="store-buttons">
+                <a href="#" class="store-btn" id="appStoreBtn">
+                    <img src="../Img/apple-icon.svg" alt="App Store" class="store-icon">
+                    <span class="store-text">
+                        <span class="store-text-small">Scarica su</span>
+                        <span class="store-text-large">App Store</span>
+                    </span>
+                </a>
+                <a href="#" class="store-btn" id="googlePlayBtn">
+                    <img src="../Img/google-play-icon.svg" alt="Google Play" class="store-icon">
+                    <span class="store-text">
+                        <span class="store-text-small">Scarica su</span>
+                        <span class="store-text-large">Google Play</span>
+                    </span>
+                </a>
+            </div>
+
+            <!-- Single QR Code Container -->
+            <div class="qr-container-single">
+                <div class="qr-card" id="dynamicQrCard">
+                    <img src="../Img/qr-ios.svg" alt="QR Code" class="qr-code" id="dynamicQrImg">
+                    <h3 class="qr-title" id="dynamicQrTitle">iOS</h3>
+                    <p class="qr-subtitle" id="dynamicQrSubtitle">Scansiona per scaricare su App Store</p>
+                    <a href="https://apps.apple.com/app/rememberme" class="qr-link" id="dynamicQrLink"
+                        target="_blank"></a>
+                </div>
+            </div>
+
+            <!-- Dynamic Store Note -->
+            <div class="store-note" id="storeNote">
+                <p>Inquadra il QR code con il tuo dispositivo per scaricare l'app</p>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="row justify-content-center">
+                    <div class="col-6 col-md-4">
+                        <div class="stats-number">50K+</div>
+                        <div class="stats-label">Utenti attivi</div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="stats-number">10K+</div>
+                        <div class="stats-label">Sessioni/giorno</div>
+                    </div>
+                    <div class="col-6 col-md-4 mt-3 mt-md-0">
+                        <div class="stats-number">4.8</div>
+                        <div class="stats-label">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COOKIE POPUP DESIGN -->
+        <div id="cookiePopup" class="cookie-popup">
+            <div class="cookie-popup-content">
+                <!-- Testa del popup con effetto glow -->
+                <div class="cookie-header">
+                    <div class="cookie-icon-container">
+                        <span class="cookie-icon">🍪</span>
+                        <span class="cookie-icon-glow"></span>
+                    </div>
+                    <h3 class="cookie-title">La Tua Privacy è Importante</h3>
+                </div>
+
+                <!-- Corpo del messaggio -->
+                <div class="cookie-body">
+                    <p class="cookie-message">
+                        Questo sito utilizza cookie per garantirti la migliore esperienza.
+                        Alcuni sono essenziali, altri ci aiutano a migliorare.
+                    </p>
+
+                    <!-- Opzioni avanzate (inizialmente nascoste) -->
+                    <div id="cookiePreferences" class="cookie-preferences" style="display: none;">
+                        <div class="preference-item">
+                            <label class="preference-label">
+                                <input type="checkbox" id="essentialCookies" checked disabled>
+                                <span class="check-custom"></span>
+                                <span class="preference-text">Cookie Essenziali <small>(sempre attivi)</small></span>
+                            </label>
+                        </div>
+                        <div class="preference-item">
+                            <label class="preference-label">
+                                <input type="checkbox" id="analyticsCookies">
+                                <span class="check-custom"></span>
+                                <span class="preference-text">Cookie Analitici</span>
+                            </label>
+                        </div>
+                        <div class="preference-item">
+                            <label class="preference-label">
+                                <input type="checkbox" id="marketingCookies">
+                                <span class="check-custom"></span>
+                                <span class="preference-text">Cookie di Marketing</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pulsanti azione -->
+                <div class="cookie-footer">
+                    <button id="acceptAllBtn" class="cookie-btn cookie-btn-primary">
+                        <span>Accetta Tutti</span>
+                        <span class="btn-glow"></span>
+                    </button>
+
+                    <div class="cookie-secondary-btns">
+                        <button id="customizeBtn" class="cookie-btn cookie-btn-outline">
+                            <span>Personalizza</span>
+                        </button>
+
+                        <button id="rejectNonEssentialBtn" class="cookie-btn cookie-btn-text">
+                            Solo Essenziali
+                        </button>
+                    </div>
+
+                    <!-- Link privacy -->
+                    <a href="#" class="cookie-privacy-link">
+                        <span>🔒</span> Privacy Policy
+                    </a>
+                </div>
+            </div>
+
+            <!-- Elementi decorativi fluttuanti -->
+            <div class="cookie-floating-elements">
+                <div class="floating-cookie">🍪</div>
+                <div class="floating-cookie">🍪</div>
+                <div class="floating-cookie">🍪</div>
             </div>
         </div>
     </main>
