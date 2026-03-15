@@ -596,15 +596,6 @@ main {
     opacity: 1;
 }
 
-#divMain2 {
-    opacity: 0;
-    transition: opacity 0.8s ease;
-}
-
-#divMain2.show {
-    opacity: 1;
-}
-
 #ghostCircle {
     border: solid lightskyblue;
     border-radius: 50%;
@@ -1385,6 +1376,7 @@ main {
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
 }
 
@@ -1567,4 +1559,20 @@ main {
         width: 200px;
         justify-content: center;
     }
+}
+
+.navbar.show {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+}
+
+.footer.show {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+#footer {
+    opacity: 0;
+    transform: translateY(50px); /* Ridotto da 100vh */
+    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }

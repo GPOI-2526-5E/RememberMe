@@ -29,7 +29,7 @@ function initQRCodeSection() {
     const dynamicQrSubtitle = document.getElementById('dynamicQrSubtitle');
     const dynamicQrLink = document.getElementById('dynamicQrLink');
     const dynamicQrCard = document.getElementById('dynamicQrCard');
-    
+
     const selectIosBtn = document.getElementById('selectIosBtn');
     const selectAndroidBtn = document.getElementById('selectAndroidBtn');
     const appStoreBtn = document.getElementById('appStoreBtn');
@@ -41,29 +41,29 @@ function initQRCodeSection() {
     // Funzione per cambiare piattaforma
     function setPlatform(platform) {
         if (platform === currentPlatform) return; // Evita cambi inutili
-        
+
         currentPlatform = platform;
-        
+
         // Aggiungi animazione al cambio
         dynamicQrCard.classList.add('platform-change');
         setTimeout(() => {
             dynamicQrCard.classList.remove('platform-change');
         }, 400);
-        
+
         if (platform === 'ios') {
             // Cambia QR code
             dynamicQrImg.src = QR_PATHS.ios;
             dynamicQrTitle.textContent = 'iOS';
             dynamicQrSubtitle.textContent = 'Scansiona per scaricare su App Store';
             dynamicQrLink.href = STORE_URLS.ios;
-            
+
             // Aggiorna bottoni
             selectIosBtn.classList.add('active');
             selectAndroidBtn.classList.remove('active');
-            
+
             // Aggiorna nota
             storeNote.innerHTML = '<p>📱 Inquadra il QR code con il tuo iPhone per scaricare l\'app dall\'App Store</p>';
-            
+
             // Evidenzia il bottone corrispondente
             appStoreBtn.classList.add('highlight');
             setTimeout(() => {
@@ -75,14 +75,14 @@ function initQRCodeSection() {
             dynamicQrTitle.textContent = 'Android';
             dynamicQrSubtitle.textContent = 'Scansiona per scaricare su Google Play';
             dynamicQrLink.href = STORE_URLS.android;
-            
+
             // Aggiorna bottoni
             selectAndroidBtn.classList.add('active');
             selectIosBtn.classList.remove('active');
-            
+
             // Aggiorna nota
             storeNote.innerHTML = '<p>🤖 Inquadra il QR code con il tuo dispositivo Android per scaricare l\'app da Google Play</p>';
-            
+
             // Evidenzia il bottone corrispondente
             googlePlayBtn.classList.add('highlight');
             setTimeout(() => {
@@ -92,36 +92,36 @@ function initQRCodeSection() {
     }
 
     // Event listeners per i bottoni di selezione piattaforma
-    selectIosBtn.addEventListener('click', function() {
+    selectIosBtn.addEventListener('click', function () {
         setPlatform('ios');
     });
 
-    selectAndroidBtn.addEventListener('click', function() {
+    selectAndroidBtn.addEventListener('click', function () {
         setPlatform('android');
     });
 
     // Event listeners per i bottoni store
-    appStoreBtn.addEventListener('click', function(e) {
+    appStoreBtn.addEventListener('click', function (e) {
         e.preventDefault();
         setPlatform('ios');
         window.open(STORE_URLS.ios, '_blank');
     });
 
-    googlePlayBtn.addEventListener('click', function(e) {
+    googlePlayBtn.addEventListener('click', function (e) {
         e.preventDefault();
         setPlatform('android');
         window.open(STORE_URLS.android, '_blank');
     });
 
     // Click sul QR code apre il link
-    dynamicQrCard.addEventListener('click', function() {
+    dynamicQrCard.addEventListener('click', function () {
         window.open(dynamicQrLink.href, '_blank');
     });
 
     // Rilevamento dispositivo
     function detectDevice() {
         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        
+
         if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
             setPlatform('ios');
         } else if (/android/i.test(userAgent)) {
@@ -385,101 +385,103 @@ function CreateNavbarMainAndFooter() {
     const logoNavbar = document.querySelector('.logo-navbar');
     const divMain = document.getElementById('divMain');
 
-
-    // Setup iniziale - SOLO navbar nascosta, footer VISIBILE SUBITO!
+    // Setup iniziale
     if (navbar) {
         navbar.style.opacity = '0';
         navbar.style.transform = 'translateY(-100%)';
-        navbar.style.transition = 'transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease';
+        navbar.classList.remove('show');
+    }
+
+    if (footer) {
+        footer.style.opacity = '0';
+        footer.style.transform = 'translateY(50px)';
+        footer.classList.remove('active', 'show');
     }
 
     if (logoNavbar) {
         logoNavbar.style.opacity = '0';
         logoNavbar.style.transform = 'scale(0.8) rotate(-5deg)';
-        logoNavbar.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
     }
 
-    // FOOTER VISIBILE SUBITO
-    if (footer) {
-        footer.style.opacity = '0';
-        footer.style.transform = 'translateY(0)';
-        footer.style.visibility = 'visible';
-        footer.style.display = 'block';
-        footer.classList.add('active');
-    }
-
-    // Avvia animazione
-    animateRememberText();
+    // Avvia l'animazione del loader
+    setTimeout(() => {
+        animateRememberText();
+    }, 100);
 }
 
 // ========== ANIMAZIONE LOGO CORRETTA ==========
 function animateRememberText() {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = '../Css/animations.css';
-    document.head.appendChild(link);
 
+    const mainLogo = document.getElementById('mainLogo');
+    const loaderCircle = document.querySelector('.loader-circle');
+    const rememberContainer = document.querySelector('.remember-text-container');
+    const divLogo = document.getElementById('divLogo');
+    const divMain = document.getElementById('divMain');
+    const navbar = document.getElementById('navbar');
+    const footer = document.getElementById('footer');
+
+    // 1. Anima logo e cerchio
+    if (mainLogo) mainLogo.classList.add('animate-logo');
+    if (loaderCircle) loaderCircle.classList.add('animate-circle');
+
+    // 2. Mostra scritta dopo 500ms
     setTimeout(() => {
-        const mainLogo = document.getElementById('mainLogo');
-        const loaderCircle = document.querySelector('.loader-circle');
-        const rememberContainer = document.querySelector('.remember-text-container');
-        const divLogo = document.getElementById('divLogo');
-        const divMain = document.getElementById('divMain');
-        const divMain2 = document.getElementById('divMain2');
-        const navbar = document.getElementById('navbar');
-        const footer = document.getElementById('footer');
+        if (rememberContainer) rememberContainer.classList.add('show');
 
-        // Logo + cerchio appaiono
-        mainLogo.classList.add('animate-logo');
-        loaderCircle.classList.add('animate-circle');
-
-        // Scritta appare
+        // 3. Dopo 2.5s totali, inizia transizione
         setTimeout(() => {
-            rememberContainer.classList.add('show');
+            console.log('🔄 Transizione al contenuto principale...');
 
-            // Dopo 2.5 secondi, transizione al contenuto
-            setTimeout(() => {
-                // Nascondi logo e scritta
+            // Nascondi elementi loader
+            if (mainLogo) {
                 mainLogo.style.opacity = '0';
                 mainLogo.style.transform = 'translateY(-30px) scale(0.8)';
+            }
+            if (loaderCircle) {
                 loaderCircle.style.opacity = '0';
                 loaderCircle.style.transform = 'translateY(-30px) scale(0.8)';
-                rememberContainer.style.opacity = '0';
+            }
+            if (rememberContainer) rememberContainer.style.opacity = '0';
 
-                // Fade out loader
-                setTimeout(() => {
+            // 4. Fade out loader (300ms)
+            setTimeout(() => {
+                if (divLogo) {
                     divLogo.classList.add('fade-out');
 
+                    // 5. Dopo fade out, mostra tutto (200ms dopo)
                     setTimeout(() => {
-                        divLogo.classList.add('d-none');
+                        if (divLogo) divLogo.classList.add('d-none');
+
+                        console.log('✅ Mostra contenuto, navbar e footer');
 
                         // Mostra contenuto principale
-                        divMain.classList.add('show');
-                        divMain2.classList.add('show');
+                        if (divMain) divMain.classList.add('show');
 
-                        // Mostra navbar
-                        navbar.style.transform = 'translateY(0)';
-                        navbar.style.opacity = '1';
+                        // MOSTRA NAVBAR
+                        if (navbar) {
+                            navbar.classList.add('show');
+                            navbar.style.transform = 'translateY(0)';
+                            navbar.style.opacity = '1';
+                        }
 
                         // Logo navbar
-                        const logoNavbar = document.querySelector('.logo-navbar');
                         if (logoNavbar) {
                             logoNavbar.style.opacity = '1';
                             logoNavbar.style.transform = 'scale(1) rotate(0)';
                         }
 
-                        // FOOTER
+                        // MOSTRA FOOTER
                         if (footer) {
+                            footer.classList.add('show', 'active');
                             footer.style.opacity = '1';
                             footer.style.transform = 'translateY(0)';
                             footer.style.visibility = 'visible';
                             footer.style.display = 'block';
-                            footer.classList.add('active');
                         }
 
-                    }, 500);
-                }, 300);
-            }, 2500);
-        }, 500);
+                    }, 400);
+                }
+            }, 500);
+        }, 2500);
     }, 500);
 }
