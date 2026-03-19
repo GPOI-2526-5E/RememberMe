@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Disabilita la scrollbar all'avvio
+    document.body.classList.add('no-scroll');
+    
     AOS.init({
         duration: 1000,
         once: true
@@ -52,7 +55,7 @@ function initQRCodeSection() {
 
         if (platform === 'ios') {
             // Cambia QR code
-            dynamicQrImg.src = QR_PATHS.ios;
+            dynamicQrImg.src = '../Img/qr-not-found.png';
             dynamicQrTitle.textContent = 'iOS';
             dynamicQrSubtitle.textContent = 'Scansiona per scaricare su App Store';
             dynamicQrLink.href = STORE_URLS.ios;
@@ -71,7 +74,7 @@ function initQRCodeSection() {
             }, 1000);
         } else {
             // Cambia QR code
-            dynamicQrImg.src = QR_PATHS.android;
+            dynamicQrImg.src = '../Img/qr-not-found.png';
             dynamicQrTitle.textContent = 'Android';
             dynamicQrSubtitle.textContent = 'Scansiona per scaricare su Google Play';
             dynamicQrLink.href = STORE_URLS.android;
@@ -318,6 +321,15 @@ function changeLanguage(lang) {
             contatti: 'Contatti',
             welcomeTitle: 'Mantieni vivo il ricordo con Remember Me',
             welcomeText: 'Un modo semplice e digitale per ricordare le persone care. Scansiona un QR code, scopri la loro storia, lascia un messaggio e conserva i ricordi nel tempo.',
+            comeFunziona: 'Come funziona',
+            scansiona: 'Scansiona il QR code',
+            smartPhone: 'Utilizza il tuo smartphone per scansionare il QR code collegato alla persona che vuoi ricordare.',
+            scopri: 'Scopri la sua storia',
+            visualizza: 'Visualizza foto, ricordi e informazioni dedicate alla persona commemorata',
+            lascia: 'Lascia un ricordo',
+            scrivi: 'Scrivi un messaggio o condividi un pensiero per mantenere vivo il ricordo nel tempo',
+            scarica: 'Scarica l&#39;App Remember Me',
+            scegli: 'Scegli la piattaforma e scansiona il QR code per il download diretto',
             footerTagline: 'La famiglia sempre vicina',
             quickLinks: 'Quick Links',
             supporto: 'Supporto',
@@ -332,6 +344,15 @@ function changeLanguage(lang) {
             contatti: 'Contact',
             welcomeTitle: 'Keep the memory alive with Remember Me',
             welcomeText: 'A simple and digital way to remember loved ones. Scan a QR code, discover their story, leave a message and preserve memories over time.',
+            comeFunziona: 'Come funziona',
+            scansiona: 'Scansiona il QR code',
+            smartPhone: 'Utilizza il tuo smartphone per scansionare il QR code collegato alla persona che vuoi ricordare.',
+            scopri: 'Scopri la sua storia',
+            visualizza: 'Visualizza foto, ricordi e informazioni dedicate alla persona commemorata',
+            lascia: 'Lascia un ricordo',
+            scrivi: 'Scrivi un messaggio o condividi un pensiero per mantenere vivo il ricordo nel tempo',
+            scarica: 'Scarica l&#39;App Remember Me',
+            scegli: 'Scegli la piattaforma e scansiona il QR code per il download diretto',
             footerTagline: 'Family always close',
             quickLinks: 'Quick Links',
             supporto: 'Support',
@@ -411,7 +432,6 @@ function CreateNavbarMainAndFooter() {
 
 // ========== ANIMAZIONE LOGO CORRETTA ==========
 function animateRememberText() {
-
     const mainLogo = document.getElementById('mainLogo');
     const loaderCircle = document.querySelector('.loader-circle');
     const rememberContainer = document.querySelector('.remember-text-container');
@@ -430,7 +450,6 @@ function animateRememberText() {
 
         // 3. Dopo 2.5s totali, inizia transizione
         setTimeout(() => {
-            console.log('🔄 Transizione al contenuto principale...');
 
             // Nascondi elementi loader
             if (mainLogo) {
@@ -451,8 +470,6 @@ function animateRememberText() {
                     // 5. Dopo fade out, mostra tutto (200ms dopo)
                     setTimeout(() => {
                         if (divLogo) divLogo.classList.add('d-none');
-
-                        console.log('✅ Mostra contenuto, navbar e footer');
 
                         // Mostra contenuto principale
                         if (divMain) divMain.classList.add('show');
@@ -478,6 +495,9 @@ function animateRememberText() {
                             footer.style.visibility = 'visible';
                             footer.style.display = 'block';
                         }
+
+                        // ✨ RIATTIVA LA SCROLLBAR quando l'animazione è finita
+                        document.body.classList.remove('no-scroll');
 
                     }, 400);
                 }

@@ -1,3 +1,15 @@
+body.no-scroll {
+    overflow: hidden; /* Nasconde la scrollbar */
+    height: 100vh; /* Imposta l'altezza al viewport */
+    position: fixed; /* Previene lo scroll involontario su mobile */
+    width: 100%;
+}
+
+/* Transizione fluida quando riappare la scrollbar */
+body {
+    transition: overflow 0.3s ease;
+}
+
 .remember-letter {
     display: inline-block;
     opacity: 0;
