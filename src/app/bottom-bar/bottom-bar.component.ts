@@ -1,0 +1,103 @@
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-bottom-bar',
+  templateUrl: './bottom-bar.component.html',
+  styleUrls: ['./bottom-bar.component.scss']
+})
+export class BottomBarComponent implements OnInit, OnDestroy {
+  isMobile: boolean = false;
+  private routerSubscription: Subscription;
+  
+  constructor(private router: Router) {
+    this.checkScreenSize();
+    this.routerSubscription = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.updateActiveState();
+    });
+  }
+  
+  ngOnInit(): void {
+    this.updateActiveState();
+  }
+  
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+  
+  @HostListener('window:resize')
+  onResize() {
+    this.checkScreenSize();
+  }
+  
+  private checkScreenSize(): void {
+    this.isMobile = window.innerWidth <= 768;
+  }
+  
+  private updateActiveState(): void {
+    // Il routerLinkActive gestirà automaticamente la classe 'active'
+    // Questa funzione può essere usata per logiche aggiuntive
+  }
+  
+  goToHome(): void {
+    const currentUrl = this.router.url;
+    
+    if (currentUrl === '/' || currentUrl === '/home') {
+      // Smooth scroll to top con animazione
+      this.smoothScrollToTop();
+      
+      // Opzionale: refresh dei dati
+      this.refreshHomeContent();
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
+  
+  goToScan(): void {
+    this.router.navigate(['/scan']);
+  }
+  
+  goToSettings(): void {
+    this.router.navigate(['/settings']);
+  }
+  
+  private smoothScrollToTop(): void {
+    const currentScroll = window.pageYOffset;
+    const targetScroll = 0;
+    const distance = targetScroll - currentScroll;
+    const duration = 500;
+    let start: number | null = null;
+    
+    const step = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const progress = timestamp - start;
+      const percentage = Math.min(progress / duration, 1);
+      
+      // Easing function
+      const easeInOutCubic = (t: number) => 
+        t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+      
+      window.scrollTo(0, currentScroll + distance * easeInOutCubic(percentage));
+      
+      if (progress < duration) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    
+    window.requestAnimationFrame(step);
+  }
+  
+  private refreshHomeContent(): void {
+    // Evento personalizzato per refresh dei contenuti home
+    const event = new CustomEvent('refreshHomeContent', {
+      detail: { timestamp: Date.now() }
+    });
+    window.dispatchEvent(event);
+  }
+}
