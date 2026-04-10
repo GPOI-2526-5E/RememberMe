@@ -1,1 +1,24 @@
-<p>bottom-bar works!</p>
+<div class="bottom-hud">
+  <div class="glass-panel">
+    <!-- DA METTERE goToMap() e mostrare una mappa con i cimiteri vicini-->
+    <button (click)="goToMap()" class="hud-btn" [class.active]="activeSection === 'map'">
+      <i class="bi bi-map"></i>
+      <span>MAPPA</span>
+    </button>
+
+    <button (click)="goToHome()" class="hud-btn" [class.active]="activeSection === 'home'">
+      <i class="bi bi-house"></i>
+      <span>HOME</span>
+    </button>
+
+    <button (click)="goToScan()" class="hud-btn" [class.active]="activeSection === 'scan'">
+      <i class="bi bi-qr-code-scan"></i>
+      <span>SCAN</span>
+    </button>
+
+    <button (click)="goToSettings()" class="hud-btn" [class.active]="activeSection === 'settings'">
+      <i class="bi bi-gear"></i>
+      <span>IMPOSTAZIONI</span>
+    </button>
+  </div>
+</div>

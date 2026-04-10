@@ -5,11 +5,12 @@ import { GeolocationService } from '../Services/geolocation.service';
 import { CemeteryService } from '../Services/cemetery.service';
 import { Cemetery } from '../Models/cemetery';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
+import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, CookieBannerComponent],
+  imports: [CommonModule, CookieBannerComponent, BottomBarComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

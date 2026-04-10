@@ -2,11 +2,12 @@ import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { QrScannerService } from '../Services/qr-scanner.service';
+import { BottomBarComponent } from "../bottom-bar/bottom-bar.component";
 
 @Component({
   selector: 'app-qr-scanner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BottomBarComponent],
   templateUrl: './qr-scanner.component.html'
 })
 export class QrScannerComponent implements OnDestroy {

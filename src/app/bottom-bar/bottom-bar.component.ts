@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 })
 export class BottomBarComponent implements OnInit, OnDestroy {
   isMobile: boolean = false;
+  activeSection: string = 'home';
   private routerSubscription: Subscription;
   
   constructor(private router: Router) {
@@ -41,30 +42,46 @@ export class BottomBarComponent implements OnInit, OnDestroy {
   }
   
   private updateActiveState(): void {
-    // Il routerLinkActive gestirà automaticamente la classe 'active'
-    // Questa funzione può essere usata per logiche aggiuntive
+    const url = this.router.url;
+    
+    if (url === '/' || url === '/home') {
+      this.activeSection = 'home';
+    } else if (url === '/scan') {
+      this.activeSection = 'scan';
+    } else if (url === '/settings') {
+      this.activeSection = 'settings';
+    }
   }
   
+  goToMap(): void {
+    this.router.navigate(['/map']).then(() => {
+      this.activeSection = 'map';
+    });
+  }
+
   goToHome(): void {
     const currentUrl = this.router.url;
     
     if (currentUrl === '/' || currentUrl === '/home') {
-      // Smooth scroll to top con animazione
       this.smoothScrollToTop();
-      
-      // Opzionale: refresh dei dati
       this.refreshHomeContent();
     } else {
-      this.router.navigate(['/']);
+      this.router.navigate(['/']).then(() => {
+        this.activeSection = 'home';
+      });
     }
   }
   
   goToScan(): void {
-    this.router.navigate(['/scan']);
+    this.router.navigate(['/scan']).then(() => {
+      this.activeSection = 'scan';
+    });
   }
   
   goToSettings(): void {
-    this.router.navigate(['/settings']);
+    this.router.navigate(['/settings']).then(() => {
+      this.activeSection = 'settings';
+    });
   }
   
   private smoothScrollToTop(): void {
@@ -79,7 +96,6 @@ export class BottomBarComponent implements OnInit, OnDestroy {
       const progress = timestamp - start;
       const percentage = Math.min(progress / duration, 1);
       
-      // Easing function
       const easeInOutCubic = (t: number) => 
         t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
       
@@ -94,7 +110,6 @@ export class BottomBarComponent implements OnInit, OnDestroy {
   }
   
   private refreshHomeContent(): void {
-    // Evento personalizzato per refresh dei contenuti home
     const event = new CustomEvent('refreshHomeContent', {
       detail: { timestamp: Date.now() }
     });
