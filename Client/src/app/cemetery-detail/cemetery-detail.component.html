@@ -1,0 +1,39 @@
+<div class="container py-5" *ngIf="cemetery; else notFound">
+  <button (click)="router.navigate(['/'])" class="btn btn-outline-secondary mb-4">← Torna alla home</button>
+  
+  <h2 class="display-5" data-aos="fade-right">{{ cemetery.name }}</h2>
+  <p class="lead">{{ cemetery.description }}</p>
+
+  <!-- Mappa -->
+  <div id="map" class="map"></div>
+
+  <!-- Ricerca defunti -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <input [(ngModel)]="searchTerm" (input)="searchDeceased()" placeholder="Cerca un defunto..." class="form-control form-control-lg">
+    </div>
+    <div class="col-md-4">
+      <button (click)="searchDeceased()" class="btn btn-blue w-100 h-100">Cerca</button>
+    </div>
+  </div>
+
+  <div class="list-group">
+    <div *ngFor="let d of filteredDeceased" class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <strong>{{ d.name }}</strong><br>
+        <small>{{ d.birth }} – {{ d.death }} • Tomba {{ d.tombId }}</small>
+      </div>
+      <button (click)="showPath(d)" class="btn btn-sm btn-blue">Mostra percorso</button>
+    </div>
+  </div>
+
+  <!-- IA Helper -->
+  <div class="mt-5 p-4 border rounded bg-light">
+    <h5>🤖 Chiedi all’IA di Eterna Memoria</h5>
+    <input #aiInput placeholder="Es. Storia del cimitero o messaggio di ricordo" class="form-control mb-3">
+    <button (click)="askAI(aiInput.value); aiInput.value=''" class="btn btn-blue">Invia domanda</button>
+  </div>
+</div>
+<ng-template #notFound>
+  <p class="text-center">Cimitero non trovato.</p>
+</ng-template>

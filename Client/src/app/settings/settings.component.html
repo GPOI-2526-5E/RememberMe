@@ -1,0 +1,316 @@
+<div class="settings-container">
+  <!-- Header -->
+  <header class="settings-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <h1>Impostazioni</h1>
+    <div class="header-spacer"></div>
+  </header>
+
+  <!-- Profilo Utente -->
+  <section class="settings-section profile-section">
+    <div class="profile-card glass-card" *ngIf="!isLoggedIn; else loggedInTemplate">
+      <div class="profile-avatar">
+        <i class="bi bi-person-circle"></i>
+      </div>
+      <div class="profile-info">
+        <h3>Accedi o Registrati</h3>
+        <p>Salva le tue preferenze e sincronizza i dati</p>
+      </div>
+      <div class="auth-buttons">
+        <button class="auth-btn login-btn" (click)="openLogin()">
+          <i class="bi bi-box-arrow-in-right"></i>
+          Accedi
+        </button>
+        <button class="auth-btn register-btn" (click)="openRegister()">
+          <i class="bi bi-person-plus"></i>
+          Registrati
+        </button>
+      </div>
+    </div>
+    
+    <ng-template #loggedInTemplate>
+      <div class="profile-card glass-card logged-in">
+        <div class="profile-avatar">
+          <img [src]="userAvatar" alt="Avatar" *ngIf="userAvatar; else defaultAvatar">
+          <ng-template #defaultAvatar>
+            <i class="bi bi-person-check"></i>
+          </ng-template>
+        </div>
+        <div class="profile-info">
+          <h3>{{ userName }}</h3>
+          <p>{{ userEmail }}</p>
+          <span class="member-badge" *ngIf="isPremium">
+            <i class="bi bi-star-fill"></i> Premium
+          </span>
+        </div>
+        <button class="logout-btn" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </ng-template>
+  </section>
+
+  <!-- Preferenze -->
+  <section class="settings-section">
+    <h2 class="section-title">
+      <i class="bi bi-sliders2"></i>
+      Preferenze
+    </h2>
+    
+    <div class="settings-card glass-card">
+      <!-- Tema -->
+      <div class="setting-item">
+        <div class="setting-info">
+          <i class="bi bi-palette"></i>
+          <div>
+            <h4>Tema</h4>
+            <p>Personalizza l'aspetto dell'app</p>
+          </div>
+        </div>
+        <div class="theme-selector">
+          <button 
+            class="theme-btn" 
+            [class.active]="currentTheme === 'light'"
+            (click)="setTheme('light')">
+            <i class="bi bi-sun-fill"></i>
+            <span>Chiaro</span>
+          </button>
+          <button 
+            class="theme-btn" 
+            [class.active]="currentTheme === 'dark'"
+            (click)="setTheme('dark')">
+            <i class="bi bi-moon-fill"></i>
+            <span>Scuro</span>
+          </button>
+          <button 
+            class="theme-btn" 
+            [class.active]="currentTheme === 'auto'"
+            (click)="setTheme('auto')">
+            <i class="bi bi-circle-half"></i>
+            <span>Auto</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dimensione testo -->
+      <div class="setting-item">
+        <div class="setting-info">
+          <i class="bi bi-fonts"></i>
+          <div>
+            <h4>Dimensione testo</h4>
+            <p>Regola la leggibilità</p>
+          </div>
+        </div>
+        <div class="font-size-control">
+          <button (click)="decreaseFontSize()">A-</button>
+          <span>{{ fontSize }}%</span>
+          <button (click)="increaseFontSize()">A+</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy e Sicurezza -->
+  <section class="settings-section">
+    <h2 class="section-title">
+      <i class="bi bi-shield-check"></i>
+      Privacy e Sicurezza
+    </h2>
+    
+    <div class="settings-card glass-card">
+      <div class="setting-item clickable" (click)="openPrivacyPolicy()">
+        <div class="setting-info">
+          <i class="bi bi-shield"></i>
+          <div>
+            <h4>Privacy Policy</h4>
+            <p>Come proteggiamo i tuoi dati</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right"></i>
+      </div>
+
+      <div class="setting-item clickable" (click)="openTermsOfService()">
+        <div class="setting-info">
+          <i class="bi bi-file-text"></i>
+          <div>
+            <h4>Termini di Servizio</h4>
+            <p>Condizioni d'uso dell'app</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right"></i>
+      </div>
+
+      <div class="setting-item clickable" (click)="clearCache()">
+        <div class="setting-info">
+          <i class="bi bi-trash"></i>
+          <div>
+            <h4>Cancella Cache</h4>
+            <p>Libera spazio di archiviazione</p>
+          </div>
+        </div>
+        <span class="cache-size">{{ cacheSize }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contatti e Supporto -->
+  <section class="settings-section">
+    <h2 class="section-title">
+      <i class="bi bi-headset"></i>
+      Contatti e Supporto
+    </h2>
+    
+    <div class="settings-card glass-card">
+      <div class="setting-item clickable" (click)="contactSupport('email')">
+        <div class="setting-info">
+          <i class="bi bi-envelope"></i>
+          <div>
+            <h4>Email Supporto</h4>
+            <p>support&#64;example.com</p>
+          </div>
+        </div>
+        <i class="bi bi-box-arrow-up-right"></i>
+      </div>
+
+      <div class="setting-item clickable" (click)="contactSupport('whatsapp')">
+        <div class="setting-info">
+          <i class="bi bi-whatsapp"></i>
+          <div>
+            <h4>WhatsApp</h4>
+            <p>+39 123 456 7890</p>
+          </div>
+        </div>
+        <i class="bi bi-box-arrow-up-right"></i>
+      </div>
+
+      <div class="setting-item clickable" (click)="openFAQ()">
+        <div class="setting-info">
+          <i class="bi bi-question-circle"></i>
+          <div>
+            <h4>FAQ</h4>
+            <p>Domande frequenti</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right"></i>
+      </div>
+
+      <div class="setting-item clickable" (click)="reportProblem()">
+        <div class="setting-info">
+          <i class="bi bi-bug"></i>
+          <div>
+            <h4>Segnala un Problema</h4>
+            <p>Aiutaci a migliorare</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Informazioni App -->
+  <section class="settings-section">
+    <h2 class="section-title">
+      <i class="bi bi-info-circle"></i>
+      Informazioni
+    </h2>
+    
+    <div class="settings-card glass-card">
+      <div class="setting-item">
+        <div class="setting-info">
+          <i class="bi bi-app-indicator"></i>
+          <div>
+            <h4>Versione App</h4>
+            <p>Ultimo aggiornamento: {{ lastUpdate }}</p>
+          </div>
+        </div>
+        <span class="version-badge">v{{ appVersion }}</span>
+      </div>
+
+      <div class="setting-item clickable" (click)="checkForUpdates()">
+        <div class="setting-info">
+          <i class="bi bi-arrow-repeat"></i>
+          <div>
+            <h4>Verifica Aggiornamenti</h4>
+            <p>Mantieni l'app aggiornata</p>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right"></i>
+      </div>
+
+      <div class="setting-item clickable" (click)="rateApp()">
+        <div class="setting-info">
+          <i class="bi bi-star"></i>
+          <div>
+            <h4>Valuta l'App</h4>
+            <p>Lascia una recensione</p>
+          </div>
+        </div>
+        <div class="rating-stars">
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-half"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="settings-footer">
+    <div class="social-links">
+      <a href="#" (click)="openSocial('twitter', $event)"><i class="bi bi-twitter-x"></i></a>
+      <a href="#" (click)="openSocial('instagram', $event)"><i class="bi bi-instagram"></i></a>
+    </div>
+    <p class="copyright">
+      © {{ currentYear }} Your Company Name. Tutti i diritti riservati.
+    </p>
+    <p class="made-with">
+      Made with <i class="bi bi-heart-fill"></i> by Your Team
+    </p>
+  </footer>
+</div>
+
+<!-- Modal Login -->
+<div class="modal-overlay" *ngIf="showLoginModal" (click)="closeModal()">
+  <div class="modal-content glass-card" (click)="$event.stopPropagation()">
+    <h2>Accedi</h2>
+    <form (submit)="handleLogin($event)">
+      <input type="email" placeholder="Email" (click)="loginEmail" name="email" required>
+      <input type="password" placeholder="Password" (click)="loginPassword" name="password" required>
+      <button type="submit" class="modal-btn primary">Accedi</button>
+      <button type="button" class="modal-btn secondary" (click)="switchToRegister()">
+        Non hai un account? Registrati
+      </button>
+    </form>
+    <button class="modal-close" (click)="closeModal()">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Modal Registrazione -->
+<div class="modal-overlay" *ngIf="showRegisterModal" (click)="closeModal()">
+  <div class="modal-content glass-card" (click)="$event.stopPropagation()">
+    <h2>Registrati</h2>
+    <form (submit)="handleRegister($event)">
+      <input type="text" placeholder="Nome" (click)="registerName" name="name" required>
+      <input type="email" placeholder="Email" (click)="registerEmail" name="email" required>
+      <input type="password" placeholder="Password" (click)="registerPassword" name="password" required>
+      <input type="password" placeholder="Conferma Password" (click)="registerConfirmPassword" name="confirmPassword" required>
+      <div class="terms-checkbox">
+        <input type="checkbox" id="terms" (click)="acceptTerms" name="terms" required>
+        <label for="terms">Accetto i <a (click)="openTermsOfService()">Termini di Servizio</a></label>
+      </div>
+      <button type="submit" class="modal-btn primary">Registrati</button>
+      <button type="button" class="modal-btn secondary" (click)="switchToLogin()">
+        Hai già un account? Accedi
+      </button>
+    </form>
+    <button class="modal-close" (click)="closeModal()">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+</div>
