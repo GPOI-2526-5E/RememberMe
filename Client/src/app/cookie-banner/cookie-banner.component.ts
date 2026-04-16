@@ -102,7 +102,7 @@ export class CookieBannerComponent implements OnInit {
 
   acceptAll(): void {
     this.preferences.analytics = true;
-    this.preferences.marketing = false; // Mantenuto false per rispetto del tema
+    this.preferences.marketing = false;
     this.cookieService.setConsent(this.preferences);
   }
 }

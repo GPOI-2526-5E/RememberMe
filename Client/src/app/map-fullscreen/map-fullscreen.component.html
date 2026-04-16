@@ -1,12 +1,19 @@
+<app-navbar></app-navbar>
 <div class="fullscreen-map-page">
   <div class="page-header">
     <button class="btn btn-outline-secondary" (click)="goBack()">← Indietro</button>
     <h2>Mappa dei cimiteri</h2>
   </div>
 
-  <div *ngIf="errorMessage" class="alert alert-warning mx-3">{{ errorMessage }}</div>
-
   <div #fullscreenMap class="fullscreen-map"></div>
+
+  <div *ngIf="errorMessage" class="error-alert">
+    <div class="error-content">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text">{{ errorMessage }}</span>
+      <button class="error-close" (click)="closeError()">×</button>
+    </div>
+  </div>
 
   <div class="map-legend">
     <div class="legend-item">

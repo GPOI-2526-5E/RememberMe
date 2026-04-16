@@ -1,12 +1,19 @@
 <div class="min-h-screen pb-28">
+  <app-navbar></app-navbar>
 
-  <!-- Titolo -->
   <div class="text-center pt-8 pb-6" data-aos="fade-down">
     <h1 class="display-5 fw-bold text-cyan-glow">REMEMBER ME</h1>
     <p class="lead opacity-80">Onora il ricordo</p>
   </div>
 
-  <!-- Cards dei cimiteri -->
+  <div *ngIf="errorMessage" class="error-alert">
+    <div class="error-content">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text">{{ errorMessage }}</span>
+      <button class="error-close" (click)="closeError()">×</button>
+    </div>
+  </div>
+
   <div class="container">
     <div class="row g-4">
       <div *ngFor="let cem of cemeteries; let i = index" 

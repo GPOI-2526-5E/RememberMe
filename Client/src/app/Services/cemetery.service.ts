@@ -12,7 +12,6 @@ export class CemeteryService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/api/Cemeteries';
 
-  // ==================== CIMITERI ====================
   getAllCemeteries(): Observable<Cemetery[]> {
     return this.http.get<Cemetery[]>(this.apiUrl);
   }
@@ -21,7 +20,6 @@ export class CemeteryService {
     return this.http.get<Cemetery>(`${this.apiUrl}/${id}`);
   }
 
-  // ==================== DEFUNTI ====================
   getDeceasedByCemetery(cemeteryId: string): Observable<Deceased[]> {
     return this.http.get<Deceased[]>(`${this.apiUrl}/${cemeteryId}/Deceased`);
   }

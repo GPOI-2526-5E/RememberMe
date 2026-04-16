@@ -6,13 +6,14 @@ import { CemeteryService } from '../Services/cemetery.service';
 import { GeolocationService } from '../Services/geolocation.service';
 import { LeafletMapService } from '../Services/leaflet-map.service';
 import { Cemetery } from '../Interfaces/Cemetery';
+import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
 
 @Component({
   selector: 'app-map-fullscreen',
   standalone: true,
-  imports: [CommonModule, CookieBannerComponent, BottomBarComponent],
+  imports: [CommonModule, CookieBannerComponent, NavbarComponent, BottomBarComponent],
   templateUrl: './map-fullscreen.component.html',
   styleUrls: ['./map-fullscreen.component.scss']
 })
@@ -98,5 +99,9 @@ export class MapFullscreenComponent implements OnInit, AfterViewInit {
 
   goBack() {
     this.router.navigate(['/']);
+  }
+
+  closeError() {
+    this.errorMessage = '';
   }
 }

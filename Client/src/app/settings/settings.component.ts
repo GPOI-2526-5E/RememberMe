@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 interface User {
   name: string;
@@ -14,44 +15,34 @@ interface User {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],   // ← necessario per *ngIf e ngModel
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-
-  // Theme
   currentTheme: 'light' | 'dark' | 'auto' = 'dark';
 
-  // Language
-  selectedLanguage: string = 'it';   // ← AGGIUNTO (era mancante)
+  selectedLanguage: string = 'it';
 
-  // User
   isLoggedIn: boolean = false;
   userName: string = '';
   userEmail: string = '';
   userAvatar: string = '';
   isPremium: boolean = false;
 
-  // Notifications
   notificationsEnabled: boolean = true;
 
-  // Font size
   fontSize: number = 100;
 
-  // App info
   appVersion: string = '2.1.0';
   lastUpdate: string = '13 Aprile 2026';
   currentYear: number = new Date().getFullYear();
 
-  // Cache
   cacheSize: string = '0 MB';
 
-  // Modals
   showLoginModal: boolean = false;
   showRegisterModal: boolean = false;
 
-  // Forms
   loginEmail: string = '';
   loginPassword: string = '';
   registerName: string = '';
@@ -126,12 +117,10 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  // Navigation
   goBack(): void {
     this.location.back();
   }
 
-  // Theme Management
   setTheme(theme: 'light' | 'dark' | 'auto'): void {
     this.currentTheme = theme;
     this.applyTheme(theme);
@@ -151,7 +140,6 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  // Language
   changeLanguage(): void {
     this.saveSettings();
     this.showToast(`Lingua cambiata in ${this.getLanguageName(this.selectedLanguage)}`);
@@ -168,7 +156,6 @@ export class SettingsComponent implements OnInit {
     return languages[code] || code;
   }
 
-  // Font Size
   increaseFontSize(): void {
     if (this.fontSize < 150) {
       this.fontSize += 10;
@@ -189,7 +176,7 @@ export class SettingsComponent implements OnInit {
     document.documentElement.style.fontSize = `${this.fontSize}%`;
   }
 
-  // Cache
+
   calculateCacheSize(): void {
     const randomSize = (Math.random() * 100 + 10).toFixed(1);
     this.cacheSize = `${randomSize} MB`;
@@ -210,7 +197,6 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  // Auth
   openLogin(): void {
     this.showLoginModal = true;
     this.showRegisterModal = false;
@@ -314,7 +300,6 @@ export class SettingsComponent implements OnInit {
     this.acceptTerms = false;
   }
 
-  // Altri metodi (privacy, support, ecc.)
   openPrivacyPolicy(): void { window.open('https://example.com/privacy', '_blank'); }
   openTermsOfService(): void { window.open('https://example.com/terms', '_blank'); }
 
@@ -357,7 +342,6 @@ export class SettingsComponent implements OnInit {
     if (urls[platform]) window.open(urls[platform], '_blank');
   }
 
-  // Toast
   private showToast(message: string, type: 'success' | 'warning' | 'info' | 'error' = 'info'): void {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
@@ -385,6 +369,6 @@ export class SettingsComponent implements OnInit {
       'info': '#00d4ff',
       'error': '#f44336'
     };
-    return colors[type] || colors['info'];   // ← corretto
+    return colors[type] || colors['info'];
   }
 }

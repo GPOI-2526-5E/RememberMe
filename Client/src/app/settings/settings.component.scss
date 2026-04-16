@@ -1,4 +1,4 @@
-// Variabili
+
 :host {
   --primary-color: #00d4ff;
   --primary-dark: #0088ff;
@@ -14,7 +14,6 @@
   display: block;
 }
 
-// Light theme
 :host-context(.light-theme) {
   --text-primary: #1a1f3a;
   --text-secondary: rgba(26, 31, 58, 0.7);
@@ -24,12 +23,18 @@
   --border-color: rgba(0, 0, 0, 0.1);
 }
 
-.settings-container {
+.setting-div {
   min-height: 100vh;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
   color: var(--text-primary);
-  padding-bottom: 100px;
-  animation: fadeIn 0.5s ease;
+  padding-bottom: 100px;  padding-top: 70px;
+}
+
+@media (max-width: 768px) {
+  .settings-div {
+    padding-top: 0;
+    animation: fadeIn 0.5s ease;
+  }
 }
 
 @keyframes fadeIn {
@@ -37,7 +42,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-// Header
 .settings-header {
   position: sticky;
   top: 0;
@@ -50,6 +54,12 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
+}
+
+@media (min-width: 769px) {
+  .settings-header {
+    top: 70px;
+  }
   
   h1 {
     font-size: 1.5rem;
@@ -64,6 +74,9 @@
   .back-btn {
     width: 40px;
     height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
     border: none;
     background: var(--card-bg);
@@ -89,7 +102,16 @@
   }
 }
 
-// Sections
+.mobile-only {
+  display: flex;
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
 .settings-section {
   padding: 0 20px;
   margin-bottom: 30px;
@@ -110,7 +132,6 @@
   }
 }
 
-// Glass Card
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(10px);
@@ -126,7 +147,6 @@
   }
 }
 
-// Profile Section
 .profile-section {
   margin-top: 20px;
 }
@@ -251,7 +271,6 @@
   }
 }
 
-// Settings Items
 .settings-card {
   overflow: hidden;
 }
@@ -303,7 +322,6 @@
   }
 }
 
-// Theme Selector
 .theme-selector {
   display: flex;
   gap: 8px;
@@ -341,7 +359,6 @@
   }
 }
 
-// Language Select
 .language-select {
   padding: 8px 12px;
   border-radius: 12px;
@@ -357,7 +374,6 @@
   }
 }
 
-// Toggle Switch
 .toggle-switch {
   position: relative;
   width: 50px;
@@ -402,7 +418,6 @@
   }
 }
 
-// Font Size Control
 .font-size-control {
   display: flex;
   align-items: center;
@@ -431,13 +446,11 @@
   }
 }
 
-// Cache Size
 .cache-size {
   color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
-// Version Badge
 .version-badge {
   padding: 4px 10px;
   background: rgba(0, 212, 255, 0.2);
@@ -447,7 +460,6 @@
   font-weight: 600;
 }
 
-// Rating Stars
 .rating-stars {
   display: flex;
   gap: 3px;
@@ -458,7 +470,6 @@
   }
 }
 
-// Footer
 .settings-footer {
   text-align: center;
   padding: 30px 20px;
@@ -516,7 +527,6 @@
   50% { transform: scale(1.1); }
 }
 
-// Modals
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -647,7 +657,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .settings-header {
     padding: 15px;
@@ -698,7 +707,6 @@
   }
 }
 
-// Animazioni per interazioni
 .setting-item.clickable:active {
   transform: scale(0.98);
 }
@@ -707,7 +715,6 @@ button:active {
   transform: scale(0.95);
 }
 
-// Scrollbar personalizzata
 ::-webkit-scrollbar {
   width: 8px;
 }

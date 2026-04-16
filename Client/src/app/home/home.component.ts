@@ -5,19 +5,21 @@ import { GeolocationService } from '../Services/geolocation.service';
 import { CemeteryService } from '../Services/cemetery.service';
 import { Cemetery } from '../Interfaces/Cemetery';
 import { Deceased } from '../Interfaces/Deceased';
+import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, CookieBannerComponent, BottomBarComponent],
+  imports: [CommonModule, CookieBannerComponent, NavbarComponent, BottomBarComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
   cemeteries: Cemetery[] = [];
   userPosition: { lat: number; lng: number } | null = null;
+  errorMessage = '';
 
   constructor(
     private geo: GeolocationService,
@@ -44,7 +46,10 @@ export class HomeComponent implements OnInit {
           );
         }
       },
-      error: (err) => console.error('Errore caricamento cimiteri', err)
+      error: (err) => {
+        console.error('Errore caricamento cimiteri', err);
+        this.errorMessage = 'Impossibile caricare i cimiteri. Riprova più tardi.';
+      }
     });
   }
 
@@ -71,12 +76,14 @@ export class HomeComponent implements OnInit {
   }
 
   goToHome() {
-    // Se sei già in home, puoi fare scroll to top o refresh cards
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   goToSettings() {
-    // Per ora alert – poi puoi creare un componente Settings
     alert('Impostazioni in arrivo (lingua, tema, privacy...)');
+  }
+
+  closeError() {
+    this.errorMessage = '';
   }
 }

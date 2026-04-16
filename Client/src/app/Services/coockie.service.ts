@@ -75,7 +75,6 @@ export class CookieService {
   }
 
   private enableAnalytics(): void {
-    // Placeholder per Google Analytics o simili
     this.setCookie('analytics_enabled', 'true', this.COOKIE_EXPIRY_DAYS);
   }
 

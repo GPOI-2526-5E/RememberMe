@@ -13,7 +13,6 @@ body {
   color: #00d4ff;
 }
 
-/* Card Cimitero con stile Remember Me */
 .card-cimitero {
   border: 2px solid rgba(0, 212, 255, 0.3);
   border-radius: 30px;
@@ -49,13 +48,11 @@ body {
   box-shadow: 0 15px 30px rgba(0, 212, 255, 0.6);
 }
 
-/* Pulsante QR fisso */
 .position-fixed {
   z-index: 1000;
   box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
 }
 
-/* Mappe */
 .fullscreen-map-page {
   min-height: 100vh;
   display: flex;
@@ -116,17 +113,15 @@ body {
   background: #ff4b4b;
 }
 
-/* ==================== BOTTOM HUD ==================== */
 .bottom-hud {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 12px 12px 20px;
+  padding: 12px 12px 36px;
   z-index: 1000;
   pointer-events: none;
 
-  // Animazione di entrata
   animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -155,10 +150,9 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
     0 1px 0 rgba(255, 255, 255, 0.1) inset;
   pointer-events: auto;
-  max-width: 360px;
+  max-width: 540px;
   margin: 0 auto;
 
-  // Effetto bordo luminoso
   &::before {
     content: '';
     position: absolute;
@@ -195,7 +189,6 @@ body {
   position: relative;
   overflow: hidden;
 
-  // Effetto ripple al click
   &::after {
     content: '';
     position: absolute;
@@ -275,7 +268,6 @@ body {
   }
 }
 
-// Media query per dispositivi mobili
 @media (max-width: 768px) {
   .bottom-hud {
     display: block;
@@ -288,14 +280,12 @@ body {
   }
 }
 
-// Supporto per notch e gesture bar
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .bottom-hud {
     padding-bottom: calc(20px + env(safe-area-inset-bottom));
   }
 }
 
-/* Glow per il titolo */
 .text-cyan-glow {
   text-shadow: 0 0 25px rgba(0, 212, 255, 0.7);
 }

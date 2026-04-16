@@ -4,10 +4,18 @@
 
 .min-h-screen {
   min-height: calc(100vh - 104px);
+  padding-top: 70px;
+}
+
+@media (max-width: 768px) {
+  .min-h-screen {
+    padding-top: 0;
+  }
 }
 
 .text-center h1 {
   letter-spacing: 0.18em;
+  margin-top: 2rem;
 }
 
 h1.display-5 {
@@ -28,4 +36,69 @@ h1.display-5 {
 
 .btn-blue {
   width: 100%;
+}
+
+.error-alert {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.error-content {
+  background: rgba(255, 87, 87, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(255, 87, 87, 0.3);
+  max-width: 500px;
+  min-width: 300px;
+}
+
+.error-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.error-text {
+  color: white;
+  font-weight: 500;
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.error-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.error-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

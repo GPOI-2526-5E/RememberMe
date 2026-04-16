@@ -1,14 +1,13 @@
-<div class="settings-container">
-  <!-- Header -->
+<app-navbar></app-navbar>
+<div class="settings-div">
   <header class="settings-header">
-    <button class="back-btn" (click)="goBack()">
+    <button class="back-btn mobile-only" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
     </button>
     <h1>Impostazioni</h1>
     <div class="header-spacer"></div>
   </header>
 
-  <!-- Profilo Utente -->
   <section class="settings-section profile-section">
     <div class="profile-card glass-card" *ngIf="!isLoggedIn; else loggedInTemplate">
       <div class="profile-avatar">
@@ -52,7 +51,6 @@
     </ng-template>
   </section>
 
-  <!-- Preferenze -->
   <section class="settings-section">
     <h2 class="section-title">
       <i class="bi bi-sliders2"></i>
@@ -60,7 +58,6 @@
     </h2>
     
     <div class="settings-card glass-card">
-      <!-- Tema -->
       <div class="setting-item">
         <div class="setting-info">
           <i class="bi bi-palette"></i>
@@ -94,7 +91,6 @@
         </div>
       </div>
 
-      <!-- Dimensione testo -->
       <div class="setting-item">
         <div class="setting-info">
           <i class="bi bi-fonts"></i>
@@ -112,7 +108,6 @@
     </div>
   </section>
 
-  <!-- Privacy e Sicurezza -->
   <section class="settings-section">
     <h2 class="section-title">
       <i class="bi bi-shield-check"></i>
@@ -155,7 +150,6 @@
     </div>
   </section>
 
-  <!-- Contatti e Supporto -->
   <section class="settings-section">
     <h2 class="section-title">
       <i class="bi bi-headset"></i>
@@ -209,7 +203,6 @@
     </div>
   </section>
 
-  <!-- Informazioni App -->
   <section class="settings-section">
     <h2 class="section-title">
       <i class="bi bi-info-circle"></i>
@@ -258,22 +251,20 @@
     </div>
   </section>
 
-  <!-- Footer -->
   <footer class="settings-footer">
     <div class="social-links">
       <a href="#" (click)="openSocial('twitter', $event)"><i class="bi bi-twitter-x"></i></a>
       <a href="#" (click)="openSocial('instagram', $event)"><i class="bi bi-instagram"></i></a>
     </div>
     <p class="copyright">
-      © {{ currentYear }} Your Company Name. Tutti i diritti riservati.
+      © {{ currentYear }} CR WebStudio. Tutti i diritti riservati.
     </p>
     <p class="made-with">
-      Made with <i class="bi bi-heart-fill"></i> by Your Team
+      Made with <i class="bi bi-heart-fill"></i>  by Igor Cassano £ Dario Racca 
     </p>
   </footer>
 </div>
 
-<!-- Modal Login -->
 <div class="modal-overlay" *ngIf="showLoginModal" (click)="closeModal()">
   <div class="modal-content glass-card" (click)="$event.stopPropagation()">
     <h2>Accedi</h2>
@@ -291,7 +282,6 @@
   </div>
 </div>
 
-<!-- Modal Registrazione -->
 <div class="modal-overlay" *ngIf="showRegisterModal" (click)="closeModal()">
   <div class="modal-content glass-card" (click)="$event.stopPropagation()">
     <h2>Registrati</h2>

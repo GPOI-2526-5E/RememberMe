@@ -1,18 +1,15 @@
+<app-navbar></app-navbar>
 <div class="container py-5" *ngIf="cemetery; else notFound">
   <button (click)="router.navigate(['/'])" class="btn btn-outline-secondary mb-4">← Torna alla home</button>
   
   <h2 class="display-5" data-aos="fade-right">{{ cemetery.name }}</h2>
   <p class="lead">{{ cemetery.description }}</p>
 
-  <div class="mb-3">
-    <button class="btn btn-blue me-2" (click)="goToMap()">Mappa</button>
-    <button class="btn btn-outline-primary" (click)="showAll()">Mostra tutti i defunti</button>
+  <div class="cemetery-map-container mb-4">
+    <h5 class="text-center mb-3">Posizione del cimitero</h5>
+    <div #mapContainer id="map" class="cemetery-map"></div>
   </div>
 
-  <!-- Mappa -->
-  <div #mapContainer id="map" class="map"></div>
-
-  <!-- Ricerca defunti -->
   <div class="row mb-4">
     <div class="col-md-8">
       <input [(ngModel)]="searchTerm" (input)="searchDeceased()" placeholder="Cerca un defunto..." class="form-control form-control-lg">
@@ -28,11 +25,9 @@
         <strong>{{ d.name }}</strong><br>
         <small>{{ d.birth }} – {{ d.death }} • Tomba {{ d.tombId }}</small>
       </div>
-      <button (click)="showPath(d)" class="btn btn-sm btn-blue">Mostra percorso</button>
     </div>
   </div>
 
-  <!-- IA Helper -->
   <div class="mt-5 p-4 border rounded bg-light">
     <h5>🤖 Chiedi all’IA di Eterna Memoria</h5>
     <input #aiInput placeholder="Es. Storia del cimitero o messaggio di ricordo" class="form-control mb-3">
@@ -42,3 +37,5 @@
 <ng-template #notFound>
   <p class="text-center">Cimitero non trovato.</p>
 </ng-template>
+<app-cookie-banner></app-cookie-banner>
+<app-bottom-bar></app-bottom-bar>
