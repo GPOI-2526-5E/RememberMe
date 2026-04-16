@@ -1,0 +1,24 @@
+<nav class="desktop-navbar" *ngIf="isDesktop">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <h3 class="navbar-title">REMEMBER ME</h3>
+    </div>
+
+    <div class="navbar-menu">
+      <button (click)="goToHome()" class="nav-btn" [class.active]="activeSection === 'home'">
+        <i class="bi bi-house"></i>
+        <span>Home</span>
+      </button>
+
+      <button (click)="goToMap()" class="nav-btn" [class.active]="activeSection === 'map'">
+        <i class="bi bi-map"></i>
+        <span>Mappa</span>
+      </button>
+
+      <button (click)="goToSettings()" class="nav-btn" [class.active]="activeSection === 'settings'">
+        <i class="bi bi-gear"></i>
+        <span>Impostazioni</span>
+      </button>
+    </div>
+  </div>
+</nav>
