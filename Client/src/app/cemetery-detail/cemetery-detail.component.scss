@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+.container {
+  background: rgba(5, 10, 28, 0.95);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 32px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+}
+
+#map {
+  min-height: 420px;
+  width: 100%;
+  margin-bottom: 1.75rem;
+}
+
+.btn-outline-secondary {
+  border-color: rgba(255, 255, 255, 0.24);
+  color: white;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.row.mb-4 {
+  gap: 1rem;
+}
+
+.list-group-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.bg-light {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+input.form-control {
+  border-radius: 24px;
+}

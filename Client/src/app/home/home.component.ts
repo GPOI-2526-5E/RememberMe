@@ -36,6 +36,7 @@ export class HomeComponent implements OnInit {
     this.cemeteryService.getAllCemeteries().subscribe({
       next: (data) => {
         this.cemeteries = data;
+        console.log(this.cemeteries)
         if (this.userPosition) {
           this.cemeteries.sort((a, b) => 
             this.calculateDistance(this.userPosition!, a) - 

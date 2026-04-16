@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+.fullscreen-map-page {
+  min-height: 100vh;
+  background: rgba(3, 8, 28, 0.96);
+}
+
+.page-header {
+  padding: 1.2rem 1.5rem;
+  background: rgba(0, 0, 0, 0.38);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.14);
+}
+
+.page-header button {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.fullscreen-map {
+  min-height: calc(100vh - 200px);
+}
+
+.map-legend {
+  background: rgba(0, 0, 0, 0.45);
+  border-top: 1px solid rgba(0, 212, 255, 0.12);
+}
+
+.legend-item {
+  color: #f6f9ff;
+}
+
+.marker {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
+}

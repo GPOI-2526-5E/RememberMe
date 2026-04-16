@@ -50,7 +50,10 @@ export class BottomBarComponent implements OnInit, OnDestroy {
       this.activeSection = 'scan';
     } else if (url === '/settings') {
       this.activeSection = 'settings';
+    } else if (url === '/map') {
+      this.activeSection = 'map';
     }
+    
   }
   
   goToMap(): void {

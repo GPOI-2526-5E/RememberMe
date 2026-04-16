@@ -9,6 +9,7 @@ import { AiHelperService } from '../Services/ai-helper.service';
 
 import { Cemetery } from '../Interfaces/Cemetery';
 import { Deceased } from '../Interfaces/Deceased';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-cemetery-detail',
@@ -20,12 +21,14 @@ import { Deceased } from '../Interfaces/Deceased';
 export class CemeteryDetailComponent implements OnInit, AfterViewInit {
 
   cemetery: Cemetery | undefined;
-  deceasedList: Deceased[] = [];
+  allDeceased: Deceased[] = [];
   filteredDeceased: Deceased[] = [];
   searchTerm = '';
 
   @ViewChild('mapContainer') mapContainer!: ElementRef;
-  private map: any; // Add map property
+  private map!: L.Map;
+  private markers: L.Marker[] = [];
+  private mapReady = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,46 +48,113 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
     this.cemeteryService.getCemeteryById(id).subscribe({
       next: (cem) => {
         this.cemetery = cem;
-        this.loadDeceased(cem._id!);   // usa _id di MongoDB
-        // Initialize map after cemetery is loaded
-        if (this.mapContainer) {
-          //this.map = this.mapService.initMap(this.mapContainer.nativeElement, cem.location, cem.longitude);
-        }
+        this.allDeceased = cem.deceased || [];
+        this.filteredDeceased = [...this.allDeceased];
+        this.tryInitializeMap();
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error('Errore caricamento cimitero:', err)
     });
   }
 
   ngAfterViewInit() {
-    // Initialize map here if needed
-    // For example: this.mapService.initializeMap(this.mapContainer.nativeElement, this.cemetery);
+    this.mapReady = true;
+    this.tryInitializeMap();
   }
 
-  private loadDeceased(cemeteryId: string) {
-    this.cemeteryService.getDeceasedByCemetery(cemeteryId).subscribe({
-      next: (data) => {
-        this.deceasedList = data;
-        this.filteredDeceased = [...data];
-      },
-      error: (err) => console.error(err)
-    });
-  }
-
-  searchDeceased() {
-    if (!this.searchTerm.trim()) {
-      this.filteredDeceased = [...this.deceasedList];
+  private tryInitializeMap() {
+    if (!this.cemetery || !this.mapReady || !this.mapContainer?.nativeElement || this.map) {
       return;
     }
 
-    this.cemeteryService.searchDeceased(this.searchTerm).subscribe({
-      next: (data: Deceased[]) => this.filteredDeceased = data,
-      error: (err: any) => console.error(err)
+    this.map = this.mapService.initMap(
+      this.mapContainer.nativeElement, 
+      this.cemetery.lat, 
+      this.cemetery.lng, 
+      17
+    );
+
+    // Marker del cimitero principale
+    this.mapService.addMarker(this.map, this.cemetery.lat, this.cemetery.lng, this.cemetery.name, 'blue');
+
+    // Marker di tutti i defunti
+    this.addDeceasedMarkers();
+
+    // Aggiorna lista quando la mappa si muove
+    this.map.on('moveend', () => this.updateVisibleDeceased());
+    this.map.on('zoomend', () => this.updateVisibleDeceased());
+
+    setTimeout(() => this.updateVisibleDeceased(), 400);
+  }
+
+  private addDeceasedMarkers() {
+    this.markers = [];
+
+    this.allDeceased.forEach(deceased => {
+      if (!deceased.lat || !deceased.lng) return;
+
+      const marker = this.mapService.addMarker(
+        this.map,
+        deceased.lat,
+        deceased.lng,
+        deceased.name,
+        'red'
+      );
+
+      (marker as any).deceasedData = deceased;
+      this.markers.push(marker);
     });
   }
 
+  private updateVisibleDeceased() {
+    if (!this.map || this.allDeceased.length === 0) return;
+
+    const bounds = this.map.getBounds();
+
+    let visible = this.allDeceased.filter(d => {
+      if (!d.lat || !d.lng) return false;
+      return bounds.contains(L.latLng(d.lat, d.lng));
+    });
+
+    // Applica filtro ricerca
+    if (this.searchTerm?.trim()) {
+      const term = this.searchTerm.toLowerCase().trim();
+      visible = visible.filter(d => d.name.toLowerCase().includes(term));
+    }
+
+    this.filteredDeceased = visible;
+  }
+
+  searchDeceased() {
+    this.updateVisibleDeceased();
+  }
+
   showPath(deceased: Deceased) {
-    if (!this.cemetery || !this.map) return;
-    // ... codice mappa come prima
+    if (!this.map || !deceased.lat || !deceased.lng) return;
+
+    this.map.flyTo([deceased.lat, deceased.lng], 19, { duration: 1.5 });
+
+    const marker = this.markers.find(m => (m as any).deceasedData?._id === deceased._id);
+    if (marker) marker.openPopup();
+  }
+
+  /** ✅ Metodo che avevi chiesto */
+  goToMap() {
+    if (this.cemetery) {
+      this.router.navigate(['/map']);   // oppure la rotta che usi per la mappa globale
+    }
+  }
+
+  // Pulsante "Mostra tutti i defunti sulla mappa"
+  showAll() {
+    if (!this.map || this.allDeceased.length === 0) return;
+
+    const bounds = L.latLngBounds(
+      this.allDeceased
+        .filter(d => d.lat && d.lng)
+        .map(d => [d.lat!, d.lng!])
+    );
+
+    this.map.fitBounds(bounds, { padding: [40, 40] });
   }
 
   askAI(question: string) {

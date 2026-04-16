@@ -4,8 +4,13 @@
   <h2 class="display-5" data-aos="fade-right">{{ cemetery.name }}</h2>
   <p class="lead">{{ cemetery.description }}</p>
 
+  <div class="mb-3">
+    <button class="btn btn-blue me-2" (click)="goToMap()">Mappa</button>
+    <button class="btn btn-outline-primary" (click)="showAll()">Mostra tutti i defunti</button>
+  </div>
+
   <!-- Mappa -->
-  <div id="map" class="map"></div>
+  <div #mapContainer id="map" class="map"></div>
 
   <!-- Ricerca defunti -->
   <div class="row mb-4">

@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.min-h-screen {
+  min-height: calc(100vh - 104px);
+}
+
+.text-center h1 {
+  letter-spacing: 0.18em;
+}
+
+h1.display-5 {
+  margin-bottom: 0.35rem;
+}
+
+.card-cimitero {
+  min-height: 100%;
+}
+
+.card-cimitero .card-body {
+  padding: 1.5rem;
+}
+
+.card-cimitero p {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.btn-blue {
+  width: 100%;
+}

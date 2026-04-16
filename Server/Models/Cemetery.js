@@ -20,4 +20,4 @@ const cemeterySchema = new mongoose.Schema({
   deceased: [deceasedSchema]
 });
 
-module.exports = mongoose.model('Cemetery', cemeterySchema);
+module.exports = mongoose.model('Cemetery', cemeterySchema, 'Cemeteries');
