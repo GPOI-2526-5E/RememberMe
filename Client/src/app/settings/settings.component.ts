@@ -50,18 +50,21 @@ export class SettingsComponent implements OnInit {
   registerPassword: string = '';
   registerConfirmPassword: string = '';
   acceptTerms: boolean = false;
+  userAccounts: Array<{ name: string; email: string; password: string; isPremium: boolean; avatar?: string }> = [];
 
   constructor(
     private router: Router,
     private location: Location
   ) {
     this.loadSettings();
+    this.loadUserAccounts();
     this.checkLoginStatus();
     this.calculateCacheSize();
   }
 
   ngOnInit(): void {
     this.applyTheme(this.currentTheme);
+    this.applyFontSize();
     this.listenToSystemTheme();
   }
 
@@ -78,6 +81,32 @@ export class SettingsComponent implements OnInit {
         console.error('Error loading settings:', e);
       }
     }
+  }
+
+  private loadUserAccounts(): void {
+    const storedAccounts = localStorage.getItem('userAccounts');
+    if (storedAccounts) {
+      try {
+        this.userAccounts = JSON.parse(storedAccounts) || [];
+      } catch {
+        this.userAccounts = [];
+      }
+    }
+
+    if (this.userAccounts.length === 0) {
+      this.userAccounts = [{
+        name: 'Utente Test',
+        email: 'test@rememberme.app',
+        password: 'Test1234',
+        isPremium: false,
+        avatar: ''
+      }];
+      this.saveUserAccounts();
+    }
+  }
+
+  private saveUserAccounts(): void {
+    localStorage.setItem('userAccounts', JSON.stringify(this.userAccounts));
   }
 
   private saveSettings(): void {
@@ -223,26 +252,33 @@ export class SettingsComponent implements OnInit {
 
   handleLogin(event: Event): void {
     event.preventDefault();
+
     if (!this.loginEmail || !this.loginPassword) {
       this.showToast('Inserisci email e password', 'warning');
       return;
     }
 
+    const email = this.loginEmail.trim().toLowerCase();
+    const account = this.userAccounts.find(user => user.email.toLowerCase() === email && user.password === this.loginPassword);
+
+    if (!account) {
+      this.showToast('Email o password non validi', 'error');
+      return;
+    }
+
     setTimeout(() => {
       this.isLoggedIn = true;
-      this.userName = this.loginEmail.split('@')[0];
-      this.userEmail = this.loginEmail;
-      this.isPremium = false;
+      this.userName = account.name;
+      this.userEmail = account.email;
+      this.userAvatar = account.avatar || '';
+      this.isPremium = account.isPremium;
 
-      localStorage.setItem('currentUser', JSON.stringify({
-        name: this.userName,
-        email: this.userEmail,
-        isPremium: this.isPremium
-      }));
+      localStorage.setItem('currentUser', JSON.stringify(account));
+      sessionStorage.setItem('loginSuccessMessage', 'Benvenuto, accesso effettuato con successo!');
 
       this.closeModal();
-      this.showToast('Login effettuato con successo', 'success');
-    }, 1000);
+      this.router.navigate(['/']);
+    }, 500);
   }
 
   handleRegister(event: Event): void {
@@ -261,21 +297,34 @@ export class SettingsComponent implements OnInit {
       return;
     }
 
+    const email = this.registerEmail.trim().toLowerCase();
+    if (this.userAccounts.some(user => user.email.toLowerCase() === email)) {
+      this.showToast('Email già registrata', 'warning');
+      return;
+    }
+
+    const newAccount = {
+      name: this.registerName.trim(),
+      email,
+      password: this.registerPassword,
+      isPremium: false,
+      avatar: ''
+    };
+
+    this.userAccounts.push(newAccount);
+    this.saveUserAccounts();
+
     setTimeout(() => {
       this.isLoggedIn = true;
-      this.userName = this.registerName;
-      this.userEmail = this.registerEmail;
-      this.isPremium = false;
+      this.userName = newAccount.name;
+      this.userEmail = newAccount.email;
+      this.userAvatar = '';
+      this.isPremium = newAccount.isPremium;
 
-      localStorage.setItem('currentUser', JSON.stringify({
-        name: this.userName,
-        email: this.userEmail,
-        isPremium: this.isPremium
-      }));
-
+      localStorage.setItem('currentUser', JSON.stringify(newAccount));
       this.closeModal();
       this.showToast('Registrazione completata con successo', 'success');
-    }, 1000);
+    }, 500);
   }
 
   logout(): void {

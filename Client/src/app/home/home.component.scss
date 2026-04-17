@@ -13,6 +13,49 @@
   }
 }
 
+.search-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border-light);
+  background: var(--panel-bg);
+  border-radius: 30px;
+  box-shadow: var(--shadow-soft);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-input {
+  flex: 4;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-primary) !important;
+  border-radius: 20px !important;
+  padding: 0.75rem 1rem !important;
+  min-width: 0;
+  font-size: 1rem;
+}
+
+.search-input:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--accent-glow) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--accent) !important;
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 0.7 !important;
+}
+
+.search-btn {
+  flex: 1;
+  white-space: nowrap;
+  min-width: 100px;
+  max-width: 120px;
+}
+
 .text-center h1 {
   letter-spacing: 0.18em;
   margin-top: 2rem;
@@ -31,11 +74,25 @@ h1.display-5 {
 }
 
 .card-cimitero p {
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--text-secondary);
 }
 
 .btn-blue {
   width: 100%;
+}
+
+.login-success-alert {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 24px;
+  background: rgba(106, 176, 76, 0.15);
+  border: 1px solid rgba(106, 176, 76, 0.35);
+  color: #ecf9f1;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  animation: slideDown 0.3s ease-out;
 }
 
 .error-alert {
@@ -53,6 +110,7 @@ h1.display-5 {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
   box-shadow: 0 8px 32px rgba(255, 87, 87, 0.3);
   max-width: 500px;
@@ -65,7 +123,7 @@ h1.display-5 {
 }
 
 .error-text {
-  color: white;
+  color: var(--text-primary);
   font-weight: 500;
   flex: 1;
   font-size: 0.95rem;
@@ -74,7 +132,7 @@ h1.display-5 {
 .error-close {
   background: none;
   border: none;
-  color: white;
+  color: var(--text-primary);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0;
@@ -89,7 +147,7 @@ h1.display-5 {
 }
 
 .error-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--accent-soft);
 }
 
 @keyframes slideDown {

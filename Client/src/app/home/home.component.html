@@ -6,6 +6,10 @@
     <p class="lead opacity-80">Onora il ricordo</p>
   </div>
 
+  <div *ngIf="showLoginSuccess" class="login-success-alert" data-aos="fade-down">
+    {{ loginSuccessMessage }}
+  </div>
+
   <div *ngIf="errorMessage" class="error-alert">
     <div class="error-content">
       <span class="error-icon">⚠️</span>
@@ -15,8 +19,25 @@
   </div>
 
   <div class="container">
+    <div class="search-bar glass-card mb-4" data-aos="fade-up">
+      <input
+        type="text"
+        class="form-control search-input"
+        placeholder="Cerca un cimitero, città o descrizione..."
+        [(ngModel)]="searchTerm"
+        (input)="searchCemeteries()"
+      />
+      <button class="btn btn-blue search-btn" (click)="searchCemeteries()">
+        Cerca
+      </button>
+    </div>
+
+    <div *ngIf="filteredCemeteries.length === 0 && searchTerm" class="text-center text-white mb-4">
+      Nessun cimitero trovato per "{{ searchTerm }}"
+    </div>
+
     <div class="row g-4">
-      <div *ngFor="let cem of cemeteries; let i = index" 
+      <div *ngFor="let cem of filteredCemeteries; let i = index" 
            class="col-md-6 col-lg-4" 
            data-aos="fade-up" 
            [attr.data-aos-delay]="i * 100">
@@ -25,7 +46,7 @@
           <img [src]="cem.image" class="card-img-top" alt="{{ cem.name }}">
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ cem.name }}</h5>
-            <p class="text-muted">{{ cem.location }}</p>
+            <p class="text-white">{{ cem.city || cem.location }}</p>
             <p class="card-text flex-grow-1">{{ cem.description }}</p>
             <button (click)="goToDetail(cem._id)" class="btn btn-blue w-100 mt-auto">
               Esplora Pianta

@@ -1,10 +1,19 @@
 export interface Cemetery {
-  _id?: string;           
+  _id?: string;
   name: string;
-  location: string;
-  lat: number;
-  lng: number;
-  image: string;
+  type?: string;
+  location: {
+    type: string;
+    coordinates: [number, number]; // [lng, lat]
+  };
+  address?: string;
+  city?: string;
+  country?: string;
   description: string;
+  image?: string;
   deceased?: any[];
+
+  // Proprietà calcolate per compatibilità
+  lat?: number;
+  lng?: number;
 }

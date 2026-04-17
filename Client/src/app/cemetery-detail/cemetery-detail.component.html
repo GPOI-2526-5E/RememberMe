@@ -1,8 +1,14 @@
 <app-navbar></app-navbar>
-<div class="container py-5" *ngIf="cemetery; else notFound">
+<div class="container py-5 card-cimitero" *ngIf="cemetery; else notFound">
   <button (click)="router.navigate(['/'])" class="btn btn-outline-secondary mb-4">← Torna alla home</button>
   
   <h2 class="display-5" data-aos="fade-right">{{ cemetery.name }}</h2>
+  <div class="cemetery-info mb-4 text-white" *ngIf="cemetery.address || cemetery.city || cemetery.country">
+    <p class="text-white mb-2" *ngIf="cemetery.address"><i class="bi bi-geo-alt"></i> {{ cemetery.address }}</p>
+    <p class="text-white mb-2" *ngIf="cemetery.city || cemetery.country">
+      <i class="bi bi-map"></i> {{ cemetery.city }}{{ cemetery.city && cemetery.country ? ', ' : '' }}{{ cemetery.country }}
+    </p>
+  </div>
   <p class="lead">{{ cemetery.description }}</p>
 
   <div class="cemetery-map-container mb-4">

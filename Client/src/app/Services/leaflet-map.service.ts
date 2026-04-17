@@ -30,10 +30,34 @@ initMap(container: string | HTMLElement, lat: number, lng: number, zoom = 18): L
   return this.map;
 }
 
-  addMarker(map: L.Map, lat: number, lng: number, popupText: string, color = 'green') {
-    return L.marker([lat, lng], {
-      icon: L.divIcon({ className: `custom-marker ${color}`, html: `<div style="background:${color};width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.5);"></div>` })
-    }).addTo(map).bindPopup(popupText);
+  addMarker(map: L.Map, lat: number, lng: number, popupText: string, color = 'red') {
+    const iconUrl = this.getMarkerIconUrl(color);
+    
+    const icon = L.icon({
+      iconUrl: iconUrl,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      shadowSize: [41, 41]
+    });
+
+    return L.marker([lat, lng], { icon }).addTo(map).bindPopup(popupText);
+  }
+
+  private getMarkerIconUrl(color: string): string {
+    const colorMap: { [key: string]: string } = {
+      'red': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+      'blue': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+      'green': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+      'orange': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+      'yellow': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
+      'violet': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
+      'grey': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
+      'black': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png'
+    };
+    
+    return colorMap[color] || colorMap['red'];
   }
 
   drawPath(map: L.Map, points: [number, number][]) {

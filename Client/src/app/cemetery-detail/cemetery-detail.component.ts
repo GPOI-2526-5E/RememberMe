@@ -69,17 +69,13 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
 
     this.map = this.mapService.initMap(
       this.mapContainer.nativeElement, 
-      this.cemetery.lat, 
-      this.cemetery.lng, 
+      this.cemetery.location.coordinates[0], 
+      this.cemetery.location.coordinates[1], 
       17
     );
 
-    this.mapService.addMarker(this.map, this.cemetery.lat, this.cemetery.lng, this.cemetery.name, 'blue');
+    this.mapService.addMarker(this.map, this.cemetery.location.coordinates[0], this.cemetery.location.coordinates[1], this.cemetery.name, 'blue');
   }
-
-
-
-
 
   searchDeceased() {
     if (!this.searchTerm?.trim()) {

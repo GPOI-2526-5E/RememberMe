@@ -35,7 +35,8 @@ app.get('/api/Cemeteries/search', async (req, res) => {
   }
 });
 
-app.get('/api/cemeteries', async (req, res) => {
+// Query per tutti i cimiteri
+app.get('/api/Cemeteries', async (req, res) => {
   try {
     const cemeteries = await Cemetery.find();
 
@@ -47,7 +48,7 @@ app.get('/api/cemeteries', async (req, res) => {
   }
 });
 
-app.get('/api/cemeteries/:id', async (req, res) => {
+app.get('/api/Cemeteries/:id', async (req, res) => {
   try {
     const cemetery = await Cemetery.findById(req.params.id);
     
@@ -63,7 +64,7 @@ app.get('/api/cemeteries/:id', async (req, res) => {
   }
 });
 
-app.get('/api/cemeteries/:id/deceased', async (req, res) => {
+app.get('/api/Cemeteries/:id/Deceased', async (req, res) => {
   try {
     const cemetery = await Cemetery.findById(req.params.id);
     if (!cemetery) return res.status(404).json({ message: 'Cimitero non trovato' });

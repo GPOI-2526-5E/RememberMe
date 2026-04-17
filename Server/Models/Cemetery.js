@@ -12,12 +12,20 @@ const deceasedSchema = new mongoose.Schema({
 
 const cemeterySchema = new mongoose.Schema({
   name: { type: String, required: true },
-  location: String,
-  lat: { type: Number, required: true },
-  lng: { type: Number, required: true },
-  image: String,
+  type: { type: String, default: 'real' },
+  location: {
+    type: { type: String, enum: ['Point'], default: 'Point' },
+    coordinates: { type: [Number], required: true } // [lng, lat]
+  },
+  address: String,
+  city: String,
+  country: String,
   description: String,
+  image: String,
   deceased: [deceasedSchema]
 });
+
+// Aggiungi indice geo-spaziale per le query di prossimità
+cemeterySchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Cemetery', cemeterySchema, 'Cemeteries');

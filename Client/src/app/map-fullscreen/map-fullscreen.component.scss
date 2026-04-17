@@ -121,7 +121,8 @@
 .map-legend {
   position: absolute;
   top: 140px;
-  left: 20px;
+  right: 20px;
+  left: auto;
   background: rgba(0, 0, 0, 0.8);
   border: 1px solid rgba(0, 212, 255, 0.3);
   border-radius: 12px;

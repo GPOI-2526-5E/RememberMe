@@ -73,8 +73,8 @@ export class MapFullscreenComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const centerLat = this.userLocation?.lat ?? this.cemeteries[0].lat;
-    const centerLng = this.userLocation?.lng ?? this.cemeteries[0].lng;
+    const centerLat = this.userLocation?.lat ?? (this.cemeteries[0].lat ?? 41.9028); // Default to Rome, Italy
+    const centerLng = this.userLocation?.lng ?? (this.cemeteries[0].lng ?? 12.4964);
     const zoom = this.userLocation ? 12 : 6;
 
     this.map = this.mapService.initMap(this.fullscreenMap.nativeElement, centerLat, centerLng, zoom);
@@ -84,10 +84,14 @@ export class MapFullscreenComponent implements OnInit, AfterViewInit {
     }
 
     this.cemeteries.forEach((cemetery) => {
-      this.mapService.addMarker(this.map, cemetery.lat, cemetery.lng, cemetery.name, 'red');
+      if (cemetery.lat !== undefined && cemetery.lng !== undefined) {
+        this.mapService.addMarker(this.map, cemetery.lat, cemetery.lng, cemetery.name, 'red');
+      }
     });
 
-    const bounds = this.cemeteries.map((cemetery) => [cemetery.lat, cemetery.lng] as [number, number]);
+    const bounds = this.cemeteries
+      .filter((cemetery) => cemetery.lat !== undefined && cemetery.lng !== undefined)
+      .map((cemetery) => [cemetery.lat!, cemetery.lng!] as [number, number]);
     if (this.userLocation) {
       bounds.push([this.userLocation.lat, this.userLocation.lng]);
     }
