@@ -11,6 +11,9 @@ import { GeolocationService } from '../Services/geolocation.service';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
+import { FooterComponent } from '../footer/footer.component';
+import { MemorialCandleComponent } from '../memorial-candle/memorial-candle.component';
+import { MemoriesTimelineComponent } from '../memories-timeline/memories-timeline.component';
 
 import { Cemetery } from '../Interfaces/Cemetery';
 import { Deceased } from '../Interfaces/Deceased';
@@ -19,7 +22,7 @@ import * as L from 'leaflet';
 @Component({
   selector: 'app-cemetery-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent, CookieBannerComponent, BottomBarComponent],
+  imports: [CommonModule, FormsModule, MemorialCandleComponent, MemoriesTimelineComponent,NavbarComponent, CookieBannerComponent, BottomBarComponent, FooterComponent],
   templateUrl: './cemetery-detail.component.html',
   styleUrls: ['./cemetery-detail.component.scss']
 })

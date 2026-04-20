@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
+import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
+import { FooterComponent } from '../footer/footer.component';
 
 interface User {
   name: string;
@@ -15,7 +18,7 @@ interface User {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, CookieBannerComponent, BottomBarComponent, FooterComponent],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })

@@ -1,0 +1,32 @@
+<div class="candle-container">
+  <div class="candle-section">
+    <h4 class="candle-title">Accendi una Candela</h4>
+    
+    <button 
+      class="candle-button" 
+      [class.lit]="isCandleOn"
+      (click)="toggleCandle()">
+      <div class="candle-wrapper">
+        <div class="candle-body">
+          <div class="candle-wax"></div>
+          <div class="flame" *ngIf="isCandleOn">
+            <span class="flame-inner"></span>
+          </div>
+        </div>
+      </div>
+      <span class="candle-label">{{ isCandleOn ? 'Candela Accesa' : 'Accendi Candela' }}</span>
+    </button>
+
+    <div class="candle-message" *ngIf="showMessage" [@fadeInOut]>
+      <i class="bi bi-heart-fill"></i> Ricordo per {{ deceasedName }}
+    </div>
+
+    <div class="candle-counter" *ngIf="candleCount > 0">
+      <p class="counter-text">
+        <i class="bi bi-fire"></i>
+        <span>{{ candleCount }}</span>
+        {{ candleCount === 1 ? 'candela accesa' : 'candele accese' }}
+      </p>
+    </div>
+  </div>
+</div>

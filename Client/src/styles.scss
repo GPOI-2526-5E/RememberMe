@@ -330,3 +330,14 @@ textarea::placeholder {
     padding-bottom: calc(20px + env(safe-area-inset-bottom));
   }
 }
+
+/* ====================== PADDING BOTTOM PER BOTTOM-BAR ====================== */
+.pb-32 {
+  padding-bottom: 128px !important;
+}
+
+@media (max-width: 768px) {
+  .pb-32 {
+    padding-bottom: 110px !important;
+  }
+}

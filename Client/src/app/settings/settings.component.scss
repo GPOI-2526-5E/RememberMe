@@ -488,26 +488,7 @@
     }
   }
   
-  .copyright {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin-bottom: 5px;
-  }
   
-  .made-with {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    
-    i {
-      color: #ff4d4d;
-      animation: heartbeat 1.5s ease infinite;
-    }
-  }
-}
-
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
 }
 
 .modal-overlay {

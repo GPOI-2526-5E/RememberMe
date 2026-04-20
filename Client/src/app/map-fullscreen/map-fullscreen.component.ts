@@ -9,11 +9,12 @@ import { Cemetery } from '../Interfaces/Cemetery';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-map-fullscreen',
   standalone: true,
-  imports: [CommonModule, CookieBannerComponent, NavbarComponent, BottomBarComponent],
+  imports: [CommonModule, CookieBannerComponent, NavbarComponent, BottomBarComponent, FooterComponent],
   templateUrl: './map-fullscreen.component.html',
   styleUrls: ['./map-fullscreen.component.scss']
 })

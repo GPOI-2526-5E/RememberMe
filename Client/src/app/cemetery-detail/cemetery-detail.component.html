@@ -1,5 +1,5 @@
 <app-navbar></app-navbar>
-<div class="container py-5 card-cimitero" *ngIf="cemetery; else notFound">
+<div class="container py-5 card-cimitero pb-32" *ngIf="cemetery; else notFound">
   <button (click)="router.navigate(['/'])" class="btn btn-outline-secondary mb-4">← Torna alla home</button>
   
   <h2 class="display-5" data-aos="fade-right">{{ cemetery.name }}</h2>
@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <div class="list-group">
+  <div class="list-group mb-4">
     <div *ngFor="let d of filteredDeceased" class="list-group-item d-flex justify-content-between align-items-center">
       <div>
         <strong>{{ d.name }}</strong><br>
@@ -35,16 +35,49 @@
     </div>
   </div>
 
+  <!-- Sezione Ricordi e Candela -->
+  <div *ngIf="filteredDeceased.length > 0" class="memorial-section">
+    <h4 class="section-title mb-4">
+      <i class="bi bi-heart-fill"></i>
+      Dedica un Ricordo a {{ filteredDeceased[0].name }}
+    </h4>
+    
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <app-memorial-candle 
+          [deceasedId]="filteredDeceased[0]._id || filteredDeceased[0].name"
+          [deceasedName]="filteredDeceased[0].name">
+        </app-memorial-candle>
+      </div>
+      <div class="col-lg-6 mb-4">
+        <div class="memory-stats">
+          <div class="stat-card">
+            <i class="bi bi-book-heart"></i>
+            <h6>Scrivi un Ricordo</h6>
+            <p>Condividi i tuoi ricordi e messaggi speciali per questo defunto. I tuoi ricordi resteranno eterni.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <app-memories-timeline 
+      [deceasedId]="filteredDeceased[0]._id || filteredDeceased[0].name"
+      [deceasedName]="filteredDeceased[0].name">
+    </app-memories-timeline>
+  </div>
+
   <div class="mt-5 p-4 border rounded bg-light">
     <h5>🤖 Chiedi all’IA di Eterna Memoria</h5>
     <input #aiInput placeholder="Es. Storia del cimitero o messaggio di ricordo" class="form-control mb-3">
-    <button (click)="askAI(aiInput.value); aiInput.value=''" class="btn btn-blue">Invia domanda</button>    <div *ngIf="aiAnswer" class="alert alert-info mt-3">
+    <button (click)="askAI(aiInput.value); aiInput.value=''" class="btn btn-blue">Invia domanda</button>
+    <div *ngIf="aiAnswer" class="alert alert-info mt-3">
       <strong>Risposta IA:</strong>
       <p class="mb-0">{{ aiAnswer }}</p>
-    </div>  </div>
+    </div>
+  </div>
 </div>
 <ng-template #notFound>
   <p class="text-center">Cimitero non trovato.</p>
 </ng-template>
 <app-cookie-banner></app-cookie-banner>
 <app-bottom-bar></app-bottom-bar>
+<app-footer></app-footer>

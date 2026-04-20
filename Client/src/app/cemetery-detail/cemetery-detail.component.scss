@@ -84,3 +84,76 @@
 input.form-control {
   border-radius: 24px;
 }
+
+.memorial-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid rgba(176, 125, 204, 0.2);
+}
+
+.section-title {
+  color: var(--accent);
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  i {
+    font-size: 1.6rem;
+  }
+}
+
+.memory-stats {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(176, 125, 204, 0.08) 0%, rgba(176, 125, 204, 0.04) 100%);
+  border: 1px solid rgba(176, 125, 204, 0.2);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  backdrop-filter: blur(10px);
+
+  i {
+    font-size: 3rem;
+    color: var(--accent);
+  }
+
+  h6 {
+    color: var(--accent);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .memorial-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+
+    i {
+      font-size: 1.3rem;
+    }
+  }
+}

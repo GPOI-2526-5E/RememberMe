@@ -4,12 +4,13 @@ import { Router } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
+import { FooterComponent } from '../footer/footer.component';
 import { QrScannerService } from '../Services/qr-scanner.service';
 
 @Component({
   selector: 'app-qr-scanner',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, CookieBannerComponent, BottomBarComponent],
+  imports: [CommonModule, NavbarComponent, CookieBannerComponent, BottomBarComponent, FooterComponent],
   templateUrl: './qr-scanner.component.html'
 })
 export class QrScannerComponent implements OnDestroy {

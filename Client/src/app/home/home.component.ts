@@ -5,15 +5,15 @@ import { Router } from '@angular/router';
 import { GeolocationService } from '../Services/geolocation.service';
 import { CemeteryService } from '../Services/cemetery.service';
 import { Cemetery } from '../Interfaces/Cemetery';
-import { Deceased } from '../Interfaces/Deceased';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, CookieBannerComponent, NavbarComponent, BottomBarComponent],
+  imports: [CommonModule, FormsModule, CookieBannerComponent, NavbarComponent, BottomBarComponent, FooterComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

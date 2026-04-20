@@ -1,0 +1,229 @@
+.candle-container {
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.candle-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, rgba(176, 125, 204, 0.08) 0%, rgba(176, 125, 204, 0.04) 100%);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(176, 125, 204, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+:host-context(.light-theme) .candle-section {
+  background: linear-gradient(135deg, rgba(142, 68, 173, 0.08) 0%, rgba(142, 68, 173, 0.04) 100%);
+  border: 1px solid rgba(142, 68, 173, 0.2);
+}
+
+.candle-title {
+  color: var(--accent);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+}
+
+.candle-button {
+  background: none;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(176, 125, 204, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &:hover {
+    box-shadow: 0 0 20px rgba(176, 125, 204, 0.3);
+    transform: scale(1.05);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &.lit {
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(176, 125, 204, 0.1) 100%);
+    border-color: #ffd700;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), 0 0 60px rgba(176, 125, 204, 0.2);
+  }
+}
+
+.candle-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.candle-body {
+  width: 30px;
+  height: 45px;
+  background: linear-gradient(to bottom, #f5f5dc, #fffacd);
+  border-radius: 2px;
+  position: relative;
+  box-shadow: inset -1px 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.candle-wax {
+  width: 100%;
+  height: 100%;
+  background: inherit;
+}
+
+.flame {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 18px;
+  animation: flicker 0.6s ease-in-out infinite;
+}
+
+.flame-inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, #ffa500, #ffed4e);
+  border-radius: 50% 50% 50% 30%;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 3px rgba(255, 165, 0, 0.8));
+}
+
+@keyframes flicker {
+  0%, 100% {
+    transform: translateX(-50%) scaleY(1);
+    opacity: 0.9;
+  }
+  25% {
+    transform: translateX(-50%) scaleY(0.95);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateX(-50%) scaleY(1.05);
+    opacity: 1;
+  }
+  75% {
+    transform: translateX(-50%) scaleY(0.98);
+    opacity: 0.88;
+  }
+}
+
+.candle-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.candle-message {
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  animation: fadeInOut 3s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i {
+    color: #e74c3c;
+    animation: heartbeat 0.6s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+.candle-counter {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.counter-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  i {
+    color: #ffa500;
+    font-size: 1.1rem;
+  }
+
+  span {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .candle-section {
+    padding: 1.5rem;
+  }
+
+  .candle-button {
+    width: 120px;
+    height: 120px;
+  }
+
+  .candle-title {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,114 @@
+<div class="memories-container">
+  <div class="memories-header">
+    <h4 class="memories-title">
+      <i class="bi bi-book-heart"></i>
+      Libro dei Ricordi
+    </h4>
+    <button 
+      class="btn btn-sm btn-outline-light"
+      (click)="showForm = !showForm">
+      <i class="bi" [class.active]="showForm" [ngClass]="showForm ? 'bi-dash' : 'bi-plus'"></i>
+      {{ showForm ? 'Annulla' : 'Aggiungi' }}
+    </button>
+  </div>
+
+  <!-- Form per aggiungere ricordo -->
+  <div class="memories-form-wrapper" *ngIf="showForm" [@slideDown]>
+    <div class="memories-form">
+      <div class="form-group">
+        <label>Nome *</label>
+        <input 
+          type="text" 
+          class="form-control"
+          [(ngModel)]="newAuthor"
+          placeholder="Chi sei?">
+      </div>
+
+      <div class="form-group">
+        <label>Tipo di Ricordo *</label>
+        <div class="type-selector">
+          <button 
+            class="type-btn"
+            [class.active]="selectedType === 'memory'"
+            (click)="selectedType = 'memory'">
+            <i class="bi bi-book-half"></i>
+            <span>Ricordo</span>
+          </button>
+          <button 
+            class="type-btn"
+            [class.active]="selectedType === 'message'"
+            (click)="selectedType = 'message'">
+            <i class="bi bi-chat-dots"></i>
+            <span>Messaggio</span>
+          </button>
+          <button 
+            class="type-btn"
+            [class.active]="selectedType === 'prayer'"
+            (click)="selectedType = 'prayer'">
+            <i class="bi bi-hands-pray"></i>
+            <span>Preghiera</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Messaggio *</label>
+        <textarea 
+          class="form-control"
+          [(ngModel)]="newMessage"
+          rows="4"
+          placeholder="Scrivi il tuo ricordo..."></textarea>
+      </div>
+
+      <button 
+        class="btn btn-blue w-100"
+        [disabled]="!newAuthor.trim() || !newMessage.trim()"
+        (click)="addMemory()">
+        Salva Ricordo
+      </button>
+    </div>
+  </div>
+
+  <!-- Timeline dei ricordi -->
+  <div class="memories-timeline">
+    <div *ngIf="memories.length === 0" class="no-memories">
+      <i class="bi bi-heart"></i>
+      <p>Nessun ricordo ancora. Sii il primo a condividere.</p>
+    </div>
+
+    <div 
+      *ngFor="let memory of memories; let i = index"
+      class="memory-item"
+      [attr.data-index]="i"
+      [@fadeIn]>
+      
+      <div class="memory-dot">
+        <i [class]="'bi ' + getIcon(memory.type)"></i>
+      </div>
+
+      <div class="memory-card">
+        <div class="memory-header">
+          <div class="memory-info">
+            <h5 class="memory-author">{{ memory.author }}</h5>
+            <span class="memory-type">{{ getTypeLabel(memory.type) }}</span>
+          </div>
+          <button 
+            class="memory-delete"
+            (click)="deleteMemory(memory.id)"
+            title="Elimina">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+
+        <p class="memory-message">{{ memory.message }}</p>
+
+        <div class="memory-footer">
+          <small class="memory-date">
+            <i class="bi bi-calendar"></i>
+            {{ formatDate(memory.date) }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
