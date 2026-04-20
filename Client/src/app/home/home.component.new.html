@@ -10,6 +10,14 @@
     {{ loginSuccessMessage }}
   </div>
 
+  <div *ngIf="errorMessage" class="error-alert">
+    <div class="error-content">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text">{{ errorMessage }}</span>
+      <button class="error-close" (click)="closeError()">×</button>
+    </div>
+  </div>
+
   <div class="container">
     <div class="search-bar glass-card mb-4" data-aos="fade-up">
       <input
@@ -24,12 +32,8 @@
       </button>
     </div>
 
-    <div *ngIf="errorMessage" class="search-error-card mb-4" data-aos="fade-up">
-      <div class="card card-cimitero h-100">
-        <div class="card-body py-3 px-4">
-          <p class="mb-0">{{ errorMessage }}</p>
-        </div>
-      </div>
+    <div *ngIf="filteredCemeteries.length === 0 && searchTerm" class="text-center text-white mb-4">
+      Nessun cimitero trovato per "{{ searchTerm }}"
     </div>
 
     <div class="row g-4">

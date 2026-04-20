@@ -5,66 +5,82 @@ import * as L from 'leaflet';
 export class LeafletMapService {
   private map: L.Map | null = null;
 
-initMap(container: string | HTMLElement, lat: number, lng: number, zoom = 18): L.Map {
-  this.map = L.map(container, {
-    center: [lat, lng],
-    zoom: zoom,
-    zoomControl: true
-  });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(this.map);
-
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
-  });
-
-  setTimeout(() => {
-    if (this.map) this.map.invalidateSize();
-  }, 100);
-
-  return this.map;
-}
-
-  addMarker(map: L.Map, lat: number, lng: number, popupText: string, color = 'red') {
-    const iconUrl = this.getMarkerIconUrl(color);
-    
-    const icon = L.icon({
-      iconUrl: iconUrl,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-      shadowSize: [41, 41]
+  initMap(container: string | HTMLElement, lat: number, lng: number, zoom = 18): L.Map {
+    this.map = L.map(container, {
+      center: [lat, lng],
+      zoom: zoom,
+      zoomControl: true
     });
 
-    return L.marker([lat, lng], { icon }).addTo(map).bindPopup(popupText);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(this.map);
+
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
+    });
+
+    setTimeout(() => {
+      if (this.map) this.map.invalidateSize();
+    }, 100);
+
+    return this.map;
   }
 
-  private getMarkerIconUrl(color: string): string {
-    const colorMap: { [key: string]: string } = {
-      'red': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-      'blue': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-      'green': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-      'orange': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
-      'yellow': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
-      'violet': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-      'grey': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
-      'black': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png'
-    };
-    
-    return colorMap[color] || colorMap['red'];
-  }
+    addMarker(map: L.Map, lat: number, lng: number, popupText: string, color = 'red', detailUrl?: string) {
+      const iconUrl = this.getMarkerIconUrl(color);
+      
+      const icon = L.icon({
+        iconUrl: iconUrl,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+        shadowSize: [41, 41]
+      });
 
-  drawPath(map: L.Map, points: [number, number][]) {
-    return L.polyline(points, { color: '#d4a017', weight: 5, opacity: 0.8 }).addTo(map);
-  }
+      const popupContent = detailUrl
+        ? `<div class="leaflet-popup-card"><strong>${popupText}</strong><br/><a class="btn btn-sm btn-primary mt-2" href="${detailUrl}">Vai ai dettagli</a></div>`
+        : popupText;
 
-  clearMap() {
-    if (this.map) this.map.eachLayer((layer) => { if (layer instanceof L.Marker || layer instanceof L.Polyline) layer.remove(); });
-  }
+      return L.marker([lat, lng], { icon }).addTo(map).bindPopup(popupContent);
+    }
+
+    private getMarkerIconUrl(color: string): string {
+      const colorMap: { [key: string]: string } = {
+        'red': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        'blue': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+        'green': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+        'orange': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+        'yellow': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
+        'violet': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
+        'grey': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
+        'black': 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png'
+      };
+      
+      return colorMap[color] || colorMap['red'];
+    }
+
+    drawPath(map: L.Map, points: [number, number][]) {
+      return L.polyline(points, { color: '#d4a017', weight: 5, opacity: 0.8 }).addTo(map);
+    }
+
+    addUserMarker(map: L.Map, lat: number, lng: number) {
+      const blueIcon = L.divIcon({
+        className: 'user-location-marker',
+        html: `<svg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'>
+          <circle cx='16' cy='16' r='12' fill='#4a90e2' opacity='0.3'/>
+          <circle cx='16' cy='16' r='8' fill='#4a90e2' opacity='0.6'/>
+          <circle cx='16' cy='16' r='4' fill='#ffffff' stroke='#4a90e2' stroke-width='2'/>
+        </svg>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
+      
+      return L.marker([lat, lng], { icon: blueIcon }).addTo(map).bindPopup('La tua posizione');
+    }
 }

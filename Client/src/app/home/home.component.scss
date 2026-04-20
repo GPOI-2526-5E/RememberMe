@@ -56,6 +56,17 @@
   max-width: 120px;
 }
 
+.search-error-card {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-error-card .card-body {
+  background: rgba(255, 87, 87, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 87, 87, 0.35);
+}
+
 .text-center h1 {
   letter-spacing: 0.18em;
   margin-top: 2rem;
@@ -71,6 +82,10 @@ h1.display-5 {
 
 .card-cimitero .card-body {
   padding: 1.5rem;
+}
+
+.card-cimitero h5 {
+  color: var(--text-primary);
 }
 
 .card-cimitero p {
@@ -159,4 +174,16 @@ h1.display-5 {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.distance-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  white-space: nowrap;
 }

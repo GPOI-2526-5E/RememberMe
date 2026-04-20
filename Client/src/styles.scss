@@ -9,9 +9,9 @@
   --accent: #b07dcc;                    /* viola più luminoso ed elegante */
   --accent-soft: rgba(176, 125, 204, 0.12);
   --accent-glow: rgba(176, 125, 204, 0.25);
-  --text-primary: #e8e8f0;
-  --text-secondary: #ffffff;
-  --text-muted: #ffffff;
+  --text-primary: white;
+  --text-secondary: white;
+  --text-muted: white;
   --border-light: rgba(176, 125, 204, 0.12);
   --radius: 28px;
   --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
@@ -31,9 +31,9 @@
   --accent: #8e44ad;                    /* viola più scuro per contrasto */
   --accent-soft: rgba(142, 68, 173, 0.15);
   --accent-glow: rgba(142, 68, 173, 0.3);
-  --text-primary: #2c3e50;
-  --text-secondary: #34495e;
-  --text-muted: #7f8c8d;
+  --text-primary: black;
+  --text-secondary: black;
+  --text-muted: black;
   --border-light: rgba(142, 68, 173, 0.2);
   --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.1);
   --shadow-accent: 0 0 25px rgba(142, 68, 173, 0.15);
@@ -41,6 +41,13 @@
   --primary-dark: #6c3483;
   --danger-color: #c0392b;
   --border-color: var(--border-light);
+}
+
+@font-face {
+  font-family: 'Citadel of Blackrose';
+  src: url('./Assets/Font/Citadel\ of\ Blackrose.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 /* ====================== STILI GENERALI ====================== */
@@ -300,6 +307,13 @@ textarea {
   border-color: var(--accent);
   box-shadow: 0 0 0 0.25rem var(--accent-soft);
   background: rgba(176, 125, 204, 0.08);
+}
+
+.form-control::placeholder,
+.form-select::placeholder,
+textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 /* Media queries */

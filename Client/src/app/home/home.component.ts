@@ -18,8 +18,8 @@ import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  cemeteries: Cemetery[] = [];
-  filteredCemeteries: Cemetery[] = [];
+  cemeteries: (Cemetery & { distance?: number })[] = [];
+  filteredCemeteries: (Cemetery & { distance?: number })[] = [];
   searchTerm = '';
   userPosition: { lat: number; lng: number } | null = null;
   errorMessage = '';
@@ -36,23 +36,32 @@ export class HomeComponent implements OnInit {
     this.checkLoginSuccess();
     this.geo.getCurrentPosition().then(pos => {
       this.userPosition = pos;
+      if (this.cemeteries.length) {
+        this.updateCemeteryDistances();
+      }
       this.loadCemeteries();
-    }).catch(() => this.loadCemeteries());
+    }).catch((err) => {
+      this.errorMessage = typeof err === 'string'
+        ? err
+        : 'Impossibile ottenere la posizione. Controlla i permessi nel browser.';
+      this.loadCemeteries();
+    });
   }
 
   private loadCemeteries() {
     this.cemeteryService.getAllCemeteries().subscribe({
       next: (data) => {
-        this.cemeteries = data;
-        this.filteredCemeteries = [...this.cemeteries];
-        console.log(this.cemeteries)
+        this.cemeteries = data.map(cem => ({
+          ...cem,
+          distance: this.userPosition ? this.calculateDistance(this.userPosition, cem) : undefined
+        }));
+        
         if (this.userPosition) {
-          this.cemeteries.sort((a, b) => 
-            this.calculateDistance(this.userPosition!, a) - 
-            this.calculateDistance(this.userPosition!, b)
-          );
-          this.filteredCemeteries = [...this.cemeteries];
+          this.updateCemeteryDistances();
         }
+        
+        this.filteredCemeteries = [...this.cemeteries];
+        console.log(this.cemeteries);
       },
       error: (err) => {
         console.error('Errore caricamento cimiteri', err);
@@ -62,13 +71,34 @@ export class HomeComponent implements OnInit {
   }
 
   private calculateDistance(pos: { lat: number; lng: number }, cem: Cemetery): number {
-    const R = 6371;
-    const dLat = (cem.location.coordinates[0] - pos.lat) * Math.PI / 180;
-    const dLng = (cem.location.coordinates[1] - pos.lng) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) ** 2 +
-      Math.cos(cem.location.coordinates[0] * Math.PI / 180) * Math.cos(cem.location.coordinates[1] * Math.PI / 180) *
-      Math.sin(dLng / 2) ** 2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const [cemLng, cemLat] = cem.location.coordinates;
+    const R = 6371; // km
+    const dLat = (cemLat - pos.lat) * Math.PI / 180;
+    const dLng = (cemLng - pos.lng) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(pos.lat * Math.PI / 180) * Math.cos(cemLat * Math.PI / 180) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  private updateCemeteryDistances() {
+    if (!this.userPosition) {
+      return;
+    }
+
+    this.cemeteries = this.cemeteries.map(cem => ({
+      ...cem,
+      distance: this.calculateDistance(this.userPosition!, cem)
+    }));
+
+    this.filteredCemeteries = this.filteredCemeteries.map(cem => ({
+      ...cem,
+      distance: this.calculateDistance(this.userPosition!, cem)
+    }));
+
+    this.cemeteries.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+    this.filteredCemeteries.sort((a, b) => (a.distance || 0) - (b.distance || 0));
   }
 
   goToDetail(id: string | undefined) {
@@ -95,54 +125,45 @@ export class HomeComponent implements OnInit {
     const term = this.searchTerm.trim().toLowerCase();
     if (!term) {
       this.filteredCemeteries = [...this.cemeteries];
+      this.errorMessage = '';
       return;
     }
 
-    // Trova la posizione della città cercata
-    const cityLocation = this.findCityLocation(term);
-    
-    if (cityLocation) {
-      // Ordina per distanza dalla città cercata
-      this.filteredCemeteries = [...this.cemeteries]
-        .map(cem => ({
-          cem,
-          distance: this.calculateDistance(cityLocation, cem)
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .map(item => item.cem);
-    } else {
-      // Se non trova la città, usa il metodo precedente basato su score
-      this.filteredCemeteries = [...this.cemeteries]
-        .map(cem => ({
-          cem,
-          score: this.calculateSearchScore(cem, term)
-        }))
-        .sort((a, b) => b.score - a.score)
-        .map(item => item.cem);
+    const filtered = this.cemeteries.filter(cem => {
+      const name = cem.name.toLowerCase();
+      const city = (cem.city || '').toLowerCase();
+      const desc = (cem.description || '').toLowerCase();
+      return name.includes(term) || city.includes(term) || desc.includes(term);
+    });
+
+    if (filtered.length === 0) {
+      this.errorMessage = `Nessun risultato trovato per "${this.searchTerm.trim()}". Verifica la città o il nome del cimitero.`;
+      this.filteredCemeteries = [];
+      return;
     }
+
+    this.filteredCemeteries = filtered.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+    this.errorMessage = '';
   }
 
   private findCityLocation(cityName: string): { lat: number; lng: number } | null {
-    // Cerca tra i cimiteri esistenti per trovare una corrispondenza della città
-    const matchingCemetery = this.cemeteries.find(cem => {
-      const location = typeof cem.location === 'string' ? cem.location : cem.city || '';
-      return location.toLowerCase().includes(cityName) ||
-             location.toLowerCase() === cityName;
+    // Cerca tra i cimiteri per trovare una corrispondenza della città
+    const matchingCemeteries = this.cemeteries.filter(cem => {
+      const city = (cem.city || '').toLowerCase();
+      const country = (cem.country || '').toLowerCase();
+      const address = (cem.address || '').toLowerCase();
+      
+      return city.includes(cityName) || country.includes(cityName) || address.includes(cityName);
     });
     
-    if (matchingCemetery) {
-      return { lat: matchingCemetery.lat!, lng: matchingCemetery.lng! };
+    if (matchingCemeteries.length > 0) {
+      // Calcola il baricentro di tutti i cimiteri trovati nella città
+      const avgLat = matchingCemeteries.reduce((sum, cem) => sum + cem.location.coordinates[1], 0) / matchingCemeteries.length;
+      const avgLng = matchingCemeteries.reduce((sum, cem) => sum + cem.location.coordinates[0], 0) / matchingCemeteries.length;
+      return { lat: avgLat, lng: avgLng };
     }
     
-    // Se non trova corrispondenza esatta, cerca il primo cimitero che contiene la città nel nome
-    const partialMatch = this.cemeteries.find(cem => {
-      const location = typeof cem.location === 'string' ? cem.location : cem.city || '';
-      return location.toLowerCase().split(' ').some(word => 
-        word.includes(cityName) || cityName.includes(word)
-      );
-    });
-    
-    return partialMatch ? { lat: partialMatch.lat!, lng: partialMatch.lng! } : null;
+    return null;
   }
 
   private calculateSearchScore(cem: Cemetery, term: string): number {

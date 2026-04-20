@@ -17,6 +17,7 @@
   padding: 2rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
+  color: var(--text-primary);
 }
 
 #map {
@@ -33,7 +34,7 @@
 }
 
 .cemetery-map {
-  height: 250px;
+  height: 400px;
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
