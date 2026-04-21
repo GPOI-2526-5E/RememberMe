@@ -18,67 +18,78 @@
   </div>
 
   <!-- Sezione Defunti -->
-  <div class="deceased-section mb-5">
-    <div class="section-header mb-4">
-      <h4 class="section-title">
-        <i class="bi bi-book"></i>
-        I Defunti di {{ cemetery.name }}
-      </h4>
-      <p class="text-muted">{{ allDeceased.length }} persone ricordate</p>
+<!-- Sezione Defunti -->
+<div class="deceased-section mb-5">
+  <div class="section-header mb-4">
+    <h4 class="section-title">
+      <i class="bi bi-book"></i>
+      I Defunti di {{ cemetery.name }}
+    </h4>
+    <p class="text-muted">{{ allDeceased.length }} persone ricordate</p>
+  </div>
+
+  <div class="row mb-4 g-3">
+    <div class="col-md-8">
+      <input [(ngModel)]="searchTerm" (input)="searchDeceased()" 
+             placeholder="Cerca un defunto per nome..." 
+             class="form-control form-control-lg search-input">
     </div>
-
-    <div class="row mb-4">
-      <div class="col-md-8">
-        <input [(ngModel)]="searchTerm" (input)="searchDeceased()" placeholder="Cerca un defunto..." class="form-control form-control-lg">
-      </div>
-      <div class="col-md-4">
-        <button (click)="searchDeceased()" class="btn btn-blue w-100 h-100">Cerca</button>
-      </div>
-    </div>
-
-    <div class="deceased-grid">
-      <div *ngIf="filteredDeceased.length > 0;">
-        <div *ngFor="let d of filteredDeceased" class="deceased-card">
-          <div class="deceased-card-header">
-            <div class="deceased-info">
-              <h5 class="deceased-name">{{ d.fullName }}</h5>
-              <div class="deceased-dates">
-                <span class="date-badge">
-                  <i class="bi bi-calendar"></i> {{ d.birthDate | date:'dd/MM/yyyy' }}
-                </span>
-                <span class="date-separator">—</span>
-                <span class="date-badge">
-                  <i class="bi bi-calendar-check"></i> {{ d.deathDate | date:'dd/MM/yyyy' }}
-                </span>
-              </div>
-            </div>
-            <div class="deceased-badge" [class.famous]="d.isFamous">
-              <i class="bi" [ngClass]="d.isFamous ? 'bi-star-fill' : 'bi-people-fill'"></i>
-            </div>
-          </div>
-
-          <div class="deceased-details">
-            <div class="detail-item">
-              <i class="bi bi-pin"></i>
-              <span><strong>Tomba:</strong> {{ d.graveId || 'N/A' }}</span>
-            </div>
-            <div class="detail-item" *ngIf="d.biography">
-              <i class="bi bi-file-text"></i>
-              <span><strong>Bio:</strong> {{ d.biography }}</span>
-            </div>
-          </div>
-
-          
-      </div>
-
-      <ng-template #noDeceased>
-        <div class="no-deceased-message">
-          <i class="bi bi-inbox"></i>
-          <p>Nessun defunto trovato</p>
-        </div>
-      </ng-template>
+    <div class="col-md-4">
+      <button (click)="searchDeceased()" class="btn btn-blue w-100 h-100">
+        <i class="bi bi-search"></i> Cerca
+      </button>
     </div>
   </div>
+
+  <div class="deceased-grid" *ngIf="filteredDeceased.length > 0">
+    <div *ngFor="let d of filteredDeceased" class="deceased-card">
+      <div class="deceased-card-header">
+        <div class="deceased-info">
+          <h5 class="deceased-name">{{ d.fullName }}</h5>
+          <div class="deceased-dates">
+            <span class="date-badge">
+              <i class="bi bi-calendar-heart"></i> Nato: {{ d.birthDate | date:'dd/MM/yyyy' }}
+            </span>
+            <span class="date-separator">→</span>
+            <span class="date-badge">
+              <i class="bi bi-flower1"></i> Morto: {{ d.deathDate | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+        </div>
+        <div class="deceased-badge" [class.famous]="d.isFamous">
+          <i class="bi" [ngClass]="d.isFamous ? 'bi-star-fill' : 'bi-people-fill'"></i>
+        </div>
+      </div>
+
+      <div class="deceased-details">
+        <div class="detail-item" *ngIf="d.graveId">
+          <i class="bi bi-pin-map-fill"></i>
+          <span><strong>Tomba:</strong> {{ d.graveId }}</span>
+        </div>
+        <div class="detail-item" *ngIf="d.biography">
+          <i class="bi bi-file-text-fill"></i>
+          <span><strong>Biografia:</strong> {{ d.biography | slice:0:100 }}{{ d.biography.length > 100 ? '...' : '' }}</span>
+        </div>
+        <div class="detail-item" *ngIf="d.assignedUsers && d.assignedUsers.length > 0">
+          <i class="bi bi-people-fill"></i>
+          <span><strong>In cura da:</strong> {{ d.assignedUsers.length }} utenti</span>
+        </div>
+      </div>
+
+      <div class="deceased-card-footer">
+        <button class="btn btn-story">
+          <i class="bi bi-book-half"></i> Visualizza storia
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredDeceased.length === 0" class="no-deceased-message">
+    <i class="bi bi-emoji-frown"></i>
+    <p>Nessun defunto trovato con il nome "{{ searchTerm }}"</p>
+    <small class="text-muted">Prova con un altro termine di ricerca</small>
+  </div>
+</div>
 
   <!-- Sezione Ricordi e Candela -->
   <div *ngIf="filteredDeceased.length > 0" class="memorial-section">

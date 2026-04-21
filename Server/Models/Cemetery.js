@@ -17,4 +17,4 @@ const Cemetery = new mongoose.Schema({
 // Aggiungi indice geo-spaziale per le query di prossimità
 Cemetery.index({ location: '2dsphere' });
 
-module.exports = mongoose.model('Cemetery', Cemetery, 'Cemeteries');
+module.exports = mongoose.model('Cemetery', Cemetery, "Cemeteries");

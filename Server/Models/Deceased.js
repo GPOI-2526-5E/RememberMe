@@ -9,8 +9,8 @@ const Deceased = new mongoose.Schema({
   graveId: String,
   assignedUsers: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users'
+    ref: 'User'
   }]
 });
 
-module.exports = mongoose.model('Deceased', Deceased, 'Deceaseds');
+module.exports = mongoose.model('Deceased', Deceased, 'Deceased');

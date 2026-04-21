@@ -48,43 +48,56 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
     private geoService: GeolocationService
   ) {}
 
-  ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
-      this.router.navigate(['/']);
-      return;
-    }
-
-    this.geoService.getCurrentPosition()
-      .then(pos => {
-        this.userPosition = pos;
-        if (this.cemetery) {
-          this.cemeteryDistance = this.calculateDistance(pos, this.cemetery);
-        }
-        if (this.map) {
-          this.mapService.addUserMarker(this.map, pos.lat, pos.lng);
-        }
-      })
-      .catch(() => console.log('Geolocalizzazione non disponibile'));
-
-    this.cemeteryService.getCemeteryById(id).subscribe({
-      next: (cem) => {
-        this.cemetery = cem;
-        this.cemeteryService.getDeceasedByCemetery(cem._id!).subscribe({
-          next: (deceased) => {
-            this.allDeceased = deceased;
-            this.filteredDeceased = [...deceased];
-          },
-          error: (err) => console.error('Errore caricamento defunti:', err)
-        });
-        if (this.userPosition) {
-          this.cemeteryDistance = this.calculateDistance(this.userPosition, cem);
-        }
-        setTimeout(() => this.tryInitializeMap(), 100);
-      },
-      error: (err) => console.error('Errore caricamento cimitero:', err)
-    });
+ngOnInit() {
+  const id = this.route.snapshot.paramMap.get('id');
+  if (!id) {
+    this.router.navigate(['/']);
+    return;
   }
+
+  this.geoService.getCurrentPosition()
+    .then(pos => {
+      this.userPosition = pos;
+      if (this.cemetery) {
+        this.cemeteryDistance = this.calculateDistance(pos, this.cemetery);
+      }
+      if (this.map) {
+        this.mapService.addUserMarker(this.map, pos.lat, pos.lng);
+      }
+    })
+    .catch(() => console.log('Geolocalizzazione non disponibile'));
+
+  this.cemeteryService.getCemeteryById(id).subscribe({
+    next: (cem) => {
+      this.cemetery = cem;
+      
+      // Chiamata corretta per ottenere i defunti
+      this.cemeteryService.getDeceasedByCemetery(cem._id!).subscribe({
+        next: (deceased) => {
+          console.log('Defunti trovati:', deceased); // Debug
+          this.allDeceased = deceased;
+          this.filteredDeceased = [...deceased];
+          
+          // Se non ci sono defunti, mostra un messaggio
+          if (this.allDeceased.length === 0) {
+            console.warn('Nessun defunto trovato per questo cimitero');
+          }
+        },
+        error: (err) => {
+          console.error('Errore caricamento defunti:', err);
+          this.allDeceased = [];
+          this.filteredDeceased = [];
+        }
+      });
+      
+      if (this.userPosition) {
+        this.cemeteryDistance = this.calculateDistance(this.userPosition, cem);
+      }
+      setTimeout(() => this.tryInitializeMap(), 100);
+    },
+    error: (err) => console.error('Errore caricamento cimitero:', err)
+  });
+}
 
   ngAfterViewInit() {
     setTimeout(() => this.tryInitializeMap(), 100);
