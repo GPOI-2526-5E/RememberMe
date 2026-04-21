@@ -11,7 +11,6 @@ export interface Cemetery {
   country?: string;
   description: string;
   image?: string;
-  deceased?: any[];
 
   // Proprietà calcolate per compatibilità
   lat?: number;

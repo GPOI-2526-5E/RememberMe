@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Memory } from '../Interfaces/Memory';
+import { Memory } from '../../Interfaces/Memory';
 
 @Component({
   selector: 'app-memories-timeline',

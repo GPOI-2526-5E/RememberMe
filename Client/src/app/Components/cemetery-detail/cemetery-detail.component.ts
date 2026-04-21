@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { CemeteryService } from '../Services/cemetery.service';
-import { LeafletMapService } from '../Services/leaflet-map.service';
-import { AiHelperService } from '../Services/ai-helper.service';
-import { GeolocationService } from '../Services/geolocation.service';
+import { CemeteryService } from '../../Services/cemetery.service';
+import { LeafletMapService } from '../../Services/leaflet-map.service';
+import { AiHelperService } from '../../Services/ai-helper.service';
+import { GeolocationService } from '../../Services/geolocation.service';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
@@ -15,8 +15,8 @@ import { FooterComponent } from '../footer/footer.component';
 import { MemorialCandleComponent } from '../memorial-candle/memorial-candle.component';
 import { MemoriesTimelineComponent } from '../memories-timeline/memories-timeline.component';
 
-import { Cemetery } from '../Interfaces/Cemetery';
-import { Deceased } from '../Interfaces/Deceased';
+import { Cemetery } from '../../Interfaces/Cemetery';
+import { Deceased } from '../../Interfaces/Deceased';
 import * as L from 'leaflet';
 
 @Component({
@@ -70,8 +70,13 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
     this.cemeteryService.getCemeteryById(id).subscribe({
       next: (cem) => {
         this.cemetery = cem;
-        this.allDeceased = cem.deceased || [];
-        this.filteredDeceased = [...this.allDeceased];
+        this.cemeteryService.getDeceasedByCemetery(cem._id!).subscribe({
+          next: (deceased) => {
+            this.allDeceased = deceased;
+            this.filteredDeceased = [...deceased];
+          },
+          error: (err) => console.error('Errore caricamento defunti:', err)
+        });
         if (this.userPosition) {
           this.cemeteryDistance = this.calculateDistance(this.userPosition, cem);
         }
@@ -129,17 +134,11 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
     } else {
       const term = this.searchTerm.toLowerCase().trim();
       this.filteredDeceased = this.allDeceased.filter(d => 
-        d.name.toLowerCase().includes(term)
+        d.fullName.toLowerCase().includes(term)
       );
     }
   }
-
-
-
-
-
-
-
+  
   askAI(question: string) {
     if (!this.cemetery) {
       this.aiAnswer = 'Cimitero non disponibile. Riprova più tardi.';

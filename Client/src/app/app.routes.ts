@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { CemeteryDetailComponent } from './cemetery-detail/cemetery-detail.component';
-import { QrScannerComponent } from './qr-scanner/qr-scanner.component';
-import { SettingsComponent } from './settings/settings.component';
-import { MapFullscreenComponent } from './map-fullscreen/map-fullscreen.component';
+import { HomeComponent } from './Components/home/home.component';
+import { CemeteryDetailComponent } from './Components/cemetery-detail/cemetery-detail.component';
+import { QrScannerComponent } from './Components/qr-scanner/qr-scanner.component';
+import { SettingsComponent } from './Components/settings/settings.component';
+import { MapFullscreenComponent } from './Components/map-fullscreen/map-fullscreen.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },

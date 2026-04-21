@@ -5,7 +5,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
 import { FooterComponent } from '../footer/footer.component';
-import { QrScannerService } from '../Services/qr-scanner.service';
+import { QrScannerService } from '../../Services/qr-scanner.service';
 
 @Component({
   selector: 'app-qr-scanner',

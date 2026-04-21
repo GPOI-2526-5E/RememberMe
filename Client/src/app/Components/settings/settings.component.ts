@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
-import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
-import { FooterComponent } from '../footer/footer.component';
+import { NavbarComponent } from '../../Components/navbar/navbar.component';
+import { CookieBannerComponent } from '../../Components/cookie-banner/cookie-banner.component';
+import { BottomBarComponent } from '../../Components/bottom-bar/bottom-bar.component';
+import { FooterComponent } from '../../Components/footer/footer.component';
 
 interface User {
   name: string;

@@ -1,10 +1,11 @@
 export interface Deceased {
   _id?: string;
-  name: string;
-  tombId: string;
-  lat: number;
-  lng: number;
-  birth: string;
-  death: string;
-  description: string;
+  fullName: string;
+  birthDate: Date;
+  deathDate: Date;
+  biography: string;
+  isFamous: boolean;
+  graveId: string;
+  cemeteryId?: string;
+  assignedUsers: string[];
 }

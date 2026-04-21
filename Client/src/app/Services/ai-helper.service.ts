@@ -48,15 +48,17 @@ export class AiHelperService {
   private findDeceasedByQuestion(question: string, deceasedList: Deceased[]): Deceased | null {
     const normalized = question.replace(/[^a-z0-9àèéìòù\s]/gi, '');
     return deceasedList.find((deceased) => {
-      const name = deceased.name.toLowerCase();
+      const name = deceased.fullName.toLowerCase();
       return normalized.includes(name.toLowerCase()) || name.split(' ').some(part => normalized.includes(part));
     }) || null;
   }
 
   private getDeceasedSummary(deceased: Deceased, cemetery: Cemetery): string {
-    const life = `${deceased.birth || '?'} – ${deceased.death || '?'}`;
-    const tomb = deceased.tombId ? `tomba ${deceased.tombId}` : 'tomba non specificata';
-    const desc = deceased.description ? `${deceased.description}` : 'Nessuna descrizione aggiuntiva disponibile.';
-    return `Ho trovato ${deceased.name}, sepolto/a nel cimitero ${cemetery.name}. Periodo di vita: ${life}, ${tomb}. ${desc}`;
+    const life = `${deceased.birthDate || '?'} – ${deceased.deathDate || '?'}`;
+    const tomb = deceased.graveId ? `tomba ${deceased.graveId}` : 'tomba non specificata';
+    const desc = deceased.biography ? `${deceased.biography}` : 'Nessuna descrizione aggiuntiva disponibile.';
+    return `Ho trovato ${deceased.fullName}, sepolto/a nel cimitero ${cemetery.name}. Periodo di vita: ${life}, ${tomb}. ${desc}`;
   }
 }
+
+

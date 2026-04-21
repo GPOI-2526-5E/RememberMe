@@ -1,8 +1,9 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Cemetery = require('./Models/Cemetery');
+const Deceased = require('./Models/Deceased');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -16,18 +17,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/api/Cemeteries/search', async (req, res) => {
+// Ricerca defunti per nome
+app.get('/api/Deceaseds/search', async (req, res) => {
   try {
     const name = req.query.name;
     if (!name) return res.status(400).json({ message: 'Nome richiesto' });
     
-    const cemeteries = await Cemetery.find({ 
-      'deceased.name': { $regex: name, $options: 'i' } 
-    });
-
-    const deceased = cemeteries.flatMap(cem => 
-      cem.deceased.filter(d => d.name.toLowerCase().includes(name.toLowerCase()))
-    );
+    const deceased = await Deceased.find({ 
+      fullName: { $regex: name, $options: 'i' } 
+    }).populate('assignedUsers');
     
     res.json(deceased);
   } catch (err) {
@@ -64,12 +62,15 @@ app.get('/api/Cemeteries/:id', async (req, res) => {
   }
 });
 
+// Ottieni defunti per cimitero
 app.get('/api/Cemeteries/:id/Deceased', async (req, res) => {
   try {
     const cemetery = await Cemetery.findById(req.params.id);
     if (!cemetery) return res.status(404).json({ message: 'Cimitero non trovato' });
     
-    res.json(cemetery.deceased || []);
+    const deceased = await Deceased.find({ cemeteryId: req.params.id }).populate('assignedUsers');
+    
+    res.json(deceased);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

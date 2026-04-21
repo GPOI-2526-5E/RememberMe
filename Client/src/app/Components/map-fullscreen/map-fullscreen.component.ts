@@ -2,10 +2,10 @@ import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { CemeteryService } from '../Services/cemetery.service';
-import { GeolocationService } from '../Services/geolocation.service';
-import { LeafletMapService } from '../Services/leaflet-map.service';
-import { Cemetery } from '../Interfaces/Cemetery';
+import { CemeteryService } from '../../Services/cemetery.service';
+import { GeolocationService } from '../../Services/geolocation.service';
+import { LeafletMapService } from '../../Services/leaflet-map.service';
+import { Cemetery } from '../../Interfaces/Cemetery';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
