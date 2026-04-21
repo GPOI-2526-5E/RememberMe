@@ -3,13 +3,12 @@
 }
 
 .app-footer {
-    padding: 3rem 1rem 110px;
     margin-top: auto;
     position: relative;
     z-index: 10;
 
     @media (max-width: 768px) {
-        padding: 2rem 1rem 100px;
+        padding: 2rem 1rem 50px;
     }
 }
 
@@ -17,13 +16,15 @@
     gap: 2rem;
     max-width: 1200px;
     margin: 0 auto 2rem;
-    
 
     @media (max-width: 576px) {
         grid-template-columns: 1fr;
         gap: 1.5rem;
         margin-bottom: 1.5rem;
         padding-bottom: 1.5rem;
+        .footer-section {
+            text-align: center;
+        }
     }
 }
 
@@ -48,7 +49,6 @@
 }
 
 .footer-bottom {
-    text-align: center;
     color: var(--text-secondary);
     font-size: 0.9rem;
     max-width: 1200px;
