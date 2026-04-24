@@ -5,19 +5,19 @@
   --bg-main: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
   --panel-bg: rgba(22, 22, 35, 0.92);
   --card-bg: rgba(18, 18, 28, 0.96);
-  --card-border: rgba(155, 89, 182, 0.2);
-  --accent: #b07dcc;                    /* viola più luminoso ed elegante */
-  --accent-soft: rgba(176, 125, 204, 0.12);
-  --accent-glow: rgba(176, 125, 204, 0.25);
+  --card-border: rgba(223, 215, 173, 0.2);
+  --accent: #dfd7ad;                    /* beige principale */
+  --accent-soft: rgba(223, 215, 173, 0.12);
+  --accent-glow: rgba(223, 215, 173, 0.25);
   --text-primary: white;
   --text-secondary: white;
   --text-muted: white;
-  --border-light: rgba(176, 125, 204, 0.12);
+  --border-light: rgba(223, 215, 173, 0.12);
   --radius: 28px;
   --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
-  --shadow-accent: 0 0 25px rgba(176, 125, 204, 0.2);
+  --shadow-accent: 0 0 25px rgba(223, 215, 173, 0.2);
   --primary-color: var(--accent);
-  --primary-dark: #6c3483;
+  --primary-dark: #b8ae79;
   --danger-color: #e74c3c;
   --border-color: var(--border-light);
 }
@@ -27,18 +27,18 @@
   --bg-main: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #f5f5f5 100%);
   --panel-bg: rgba(255, 255, 255, 0.92);
   --card-bg: rgba(255, 255, 255, 0.96);
-  --card-border: rgba(176, 125, 204, 0.3);
-  --accent: #8e44ad;                    /* viola più scuro per contrasto */
-  --accent-soft: rgba(142, 68, 173, 0.15);
-  --accent-glow: rgba(142, 68, 173, 0.3);
+  --card-border: rgba(223, 215, 173, 0.3);
+  --accent: #dfd7ad;                    /* beige principale */
+  --accent-soft: rgba(223, 215, 173, 0.15);
+  --accent-glow: rgba(223, 215, 173, 0.3);
   --text-primary: black;
   --text-secondary: black;
   --text-muted: black;
-  --border-light: rgba(142, 68, 173, 0.2);
+  --border-light: rgba(223, 215, 173, 0.2);
   --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.1);
-  --shadow-accent: 0 0 25px rgba(142, 68, 173, 0.15);
+  --shadow-accent: 0 0 25px rgba(223, 215, 173, 0.15);
   --primary-color: var(--accent);
-  --primary-dark: #6c3483;
+  --primary-dark: #b8ae79;
   --danger-color: #c0392b;
   --border-color: var(--border-light);
 }
@@ -102,8 +102,8 @@ body {
 
 /* ====================== BOTTONI ====================== */
 .btn-blue {
-  background: linear-gradient(135deg, var(--accent), #6c3483);
-  color: white;
+  background: linear-gradient(135deg, var(--accent), var(--primary-dark));
+  color: black;
   border: none;
   border-radius: 50px;
   padding: 14px 36px;
@@ -213,7 +213,7 @@ body {
   inset: -1px;
   border-radius: 28px;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(176, 125, 204, 0.15), rgba(176, 125, 204, 0.05));
+  background: linear-gradient(135deg, rgba(223, 215, 173, 0.15), rgba(223, 215, 173, 0.05));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -267,7 +267,7 @@ body {
 }
 
 .scan-btn.active {
-  background: linear-gradient(135deg, var(--accent), #6c3483);
+  background: linear-gradient(135deg, var(--accent), var(--primary-dark));
   box-shadow: 0 8px 22px var(--accent-glow);
 }
 
@@ -297,7 +297,7 @@ body {
 .form-select,
 textarea {
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(176, 125, 204, 0.15);
+  border: 1px solid rgba(223, 215, 173, 0.15);
   color: var(--text-primary);
   border-radius: 22px;
 }
@@ -306,7 +306,7 @@ textarea {
 .form-select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 0.25rem var(--accent-soft);
-  background: rgba(176, 125, 204, 0.08);
+  background: rgba(223, 215, 173, 0.08);
 }
 
 .form-control::placeholder,

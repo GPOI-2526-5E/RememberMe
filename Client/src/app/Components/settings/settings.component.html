@@ -267,29 +267,6 @@
   </div>
 </div>
 
-<div class="modal-overlay" *ngIf="showRegisterModal" (click)="closeModal()">
-  <div class="modal-content glass-card" (click)="$event.stopPropagation()">
-    <h2>Registrati</h2>
-    <form (submit)="handleRegister($event)">
-      <input type="text" placeholder="Nome" [(ngModel)]="registerName" name="name" required>
-      <input type="email" placeholder="Email" [(ngModel)]="registerEmail" name="email" required>
-      <input type="password" placeholder="Password" [(ngModel)]="registerPassword" name="password" required>
-      <input type="password" placeholder="Conferma Password" [(ngModel)]="registerConfirmPassword" name="confirmPassword" required>
-      <div class="terms-checkbox">
-        <input type="checkbox" id="terms" [(ngModel)]="acceptTerms" name="terms" required>
-        <label for="terms">Accetto i <a (click)="openTermsOfService()">Termini di Servizio</a></label>
-      </div>
-      <button type="submit" class="modal-btn primary">Registrati</button>
-      <button type="button" class="modal-btn secondary" (click)="switchToLogin()">
-        Hai già un account? Accedi
-      </button>
-    </form>
-    <button class="modal-close" (click)="closeModal()">
-      <i class="bi bi-x"></i>
-    </button>
-  </div>
-</div>
-
 <app-cookie-banner></app-cookie-banner>
 <app-bottom-bar></app-bottom-bar>
 <app-footer></app-footer>

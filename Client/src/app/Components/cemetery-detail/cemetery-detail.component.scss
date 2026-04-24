@@ -88,7 +88,7 @@ input.form-control {
 .memorial-section {
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 2px solid rgba(176, 125, 204, 0.2);
+  border-top: 2px solid rgba(223, 215, 173, 0.2);
 }
 
 .section-title {
@@ -111,8 +111,8 @@ input.form-control {
 }
 
 .stat-card {
-  background: linear-gradient(135deg, rgba(176, 125, 204, 0.08) 0%, rgba(176, 125, 204, 0.04) 100%);
-  border: 1px solid rgba(176, 125, 204, 0.2);
+  background: linear-gradient(135deg, rgba(223, 215, 173, 0.08) 0%, rgba(223, 215, 173, 0.04) 100%);
+  border: 1px solid rgba(223, 215, 173, 0.2);
   border-radius: 20px;
   padding: 2rem;
   text-align: center;
@@ -162,7 +162,7 @@ input.form-control {
 // Stili per la sezione defunti
 .deceased-section {
   .section-header {
-    border-bottom: 2px solid rgba(176, 125, 204, 0.2);
+    border-bottom: 2px solid rgba(223, 215, 173, 0.2);
     padding-bottom: 1rem;
     margin-bottom: 2rem;
   }
@@ -175,7 +175,7 @@ input.form-control {
     
     &:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(176, 125, 204, 0.1);
+      box-shadow: 0 0 0 3px rgba(223, 215, 173, 0.1);
     }
   }
 }
@@ -199,7 +199,7 @@ input.form-control {
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    border-color: rgba(176, 125, 204, 0.3);
+    border-color: rgba(223, 215, 173, 0.3);
   }
 
   &::before {
@@ -273,7 +273,7 @@ input.form-control {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(176, 125, 204, 0.1);
+  background: rgba(223, 215, 173, 0.1);
   
   i {
     font-size: 1.5rem;
@@ -320,8 +320,8 @@ input.form-control {
 }
 
 .btn-story {
-  background: linear-gradient(135deg, rgba(176, 125, 204, 0.1), rgba(176, 125, 204, 0.05));
-  border: 1px solid rgba(176, 125, 204, 0.3);
+  background: linear-gradient(135deg, rgba(223, 215, 173, 0.1), rgba(223, 215, 173, 0.05));
+  border: 1px solid rgba(223, 215, 173, 0.3);
   color: var(--accent);
   padding: 0.6rem 1.2rem;
   border-radius: 12px;
@@ -333,9 +333,9 @@ input.form-control {
   
   &:hover {
     background: var(--accent);
-    color: white;
+    color: black;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(176, 125, 204, 0.3);
+    box-shadow: 0 5px 15px rgba(223, 215, 173, 0.3);
   }
   
   i {

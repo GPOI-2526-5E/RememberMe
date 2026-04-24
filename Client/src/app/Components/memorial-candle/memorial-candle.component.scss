@@ -8,16 +8,16 @@
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
-  background: linear-gradient(135deg, rgba(176, 125, 204, 0.08) 0%, rgba(176, 125, 204, 0.04) 100%);
+  background: linear-gradient(135deg, rgba(223, 215, 173, 0.08) 0%, rgba(223, 215, 173, 0.04) 100%);
   padding: 2rem;
   border-radius: 20px;
-  border: 1px solid rgba(176, 125, 204, 0.2);
+  border: 1px solid rgba(223, 215, 173, 0.2);
   backdrop-filter: blur(10px);
 }
 
 :host-context(.light-theme) .candle-section {
-  background: linear-gradient(135deg, rgba(142, 68, 173, 0.08) 0%, rgba(142, 68, 173, 0.04) 100%);
-  border: 1px solid rgba(142, 68, 173, 0.2);
+  background: linear-gradient(135deg, rgba(223, 215, 173, 0.08) 0%, rgba(223, 215, 173, 0.04) 100%);
+  border: 1px solid rgba(223, 215, 173, 0.2);
 }
 
 .candle-title {
@@ -51,13 +51,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle, rgba(176, 125, 204, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(223, 215, 173, 0.1) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.4s ease;
   }
 
   &:hover {
-    box-shadow: 0 0 20px rgba(176, 125, 204, 0.3);
+    box-shadow: 0 0 20px rgba(223, 215, 173, 0.3);
     transform: scale(1.05);
 
     &::before {
@@ -66,9 +66,9 @@
   }
 
   &.lit {
-    background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(176, 125, 204, 0.1) 100%);
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(223, 215, 173, 0.1) 100%);
     border-color: #ffd700;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), 0 0 60px rgba(176, 125, 204, 0.2);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), 0 0 60px rgba(223, 215, 173, 0.2);
   }
 }
 
@@ -82,7 +82,7 @@
 .candle-body {
   width: 30px;
   height: 45px;
-  background: linear-gradient(to bottom, #f5f5dc, #fffacd);
+  background: linear-gradient(to bottom, #dfd7ad, #fff8bd);
   border-radius: 2px;
   position: relative;
   box-shadow: inset -1px 0 2px rgba(0, 0, 0, 0.1);
@@ -227,3 +227,4 @@
     font-size: 1rem;
   }
 }
+
