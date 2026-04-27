@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import AOS from 'aos';
 import { CookieService, CookiePreferences } from '../../Services/coockie.service';
 
 @Component({
   selector: 'app-cookie-banner',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  styleUrls: ['./cookie-banner.component.scss'],
   template: `
-    <div class="cookie-banner" *ngIf="showBanner">
+    <div class="cookie-banner" *ngIf="showBanner" data-aos="zoom-in" data-aos-duration="700" data-aos-offset="0" data-aos-once="true">
       <div class="cookie-container">
         <div class="cookie-header">
           <i class="bi bi-shield-shaded"></i>
@@ -87,6 +89,9 @@ export class CookieBannerComponent implements OnInit {
   ngOnInit(): void {
     this.cookieService.showBanner$.subscribe(show => {
       this.showBanner = show;
+      if (show) {
+        AOS.refresh();
+      }
     });
   }
 

@@ -7,6 +7,7 @@ import { CookieService, CookiePreferences } from '../../Services/coockie.service
   selector: 'app-cookie-settings',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  styleUrls: ['./cookie-settings.component.scss'],
   template: `
     <div class="cookie-settings">
       <div class="settings-container">
