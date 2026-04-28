@@ -17,7 +17,6 @@ import { MemoriesTimelineComponent } from '../memories-timeline/memories-timelin
 
 import { Cemetery } from '../../Interfaces/Cemetery';
 import { Deceased } from '../../Interfaces/Deceased';
-import * as L from 'leaflet';
 
 @Component({
   selector: 'app-cemetery-detail',
@@ -35,9 +34,10 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
   aiAnswer = '';
   userPosition: { lat: number; lng: number } | null = null;
   cemeteryDistance: number | undefined;
+  cemeteryDuration: string | undefined;
 
   @ViewChild('mapContainer') mapContainer!: ElementRef;
-  private map!: L.Map;
+  private map: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -58,11 +58,11 @@ ngOnInit() {
   this.geoService.getCurrentPosition()
     .then(pos => {
       this.userPosition = pos;
-      if (this.cemetery) {
-        this.cemeteryDistance = this.calculateDistance(pos, this.cemetery);
-      }
-      if (this.map) {
+      if (this.cemetery && this.cemetery.lat !== undefined && this.cemetery.lng !== undefined && this.map) {
         this.mapService.addUserMarker(this.map, pos.lat, pos.lng);
+        this.mapService.renderRoute(this.map, pos, { lat: this.cemetery.lat, lng: this.cemetery.lng })
+          .then(route => this.cemeteryDistance = route.distanceKm)
+          .catch(() => this.cemeteryDistance = this.calculateDistance(pos, this.cemetery!));
       }
     })
     .catch(() => console.log('Geolocalizzazione non disponibile'));
@@ -103,18 +103,17 @@ ngOnInit() {
     setTimeout(() => this.tryInitializeMap(), 100);
   }
 
-  private tryInitializeMap() {
+  private async tryInitializeMap() {
     if (!this.cemetery || !this.mapContainer?.nativeElement) {
       return;
     }
 
     if (this.map) {
-      this.map.remove();
-      this.map = null as any;
+      return;
     }
 
     const [lng, lat] = this.cemetery.location.coordinates;
-    this.map = this.mapService.initMap(
+    this.map = await this.mapService.initMap(
       this.mapContainer.nativeElement,
       lat,
       lng,
@@ -122,10 +121,18 @@ ngOnInit() {
     );
 
     const detailUrl = this.cemetery._id ? `/detail/${this.cemetery._id}` : undefined;
-    this.mapService.addMarker(this.map, lat, lng, this.cemetery.name, 'blue', detailUrl);
+    this.mapService.addMarker(this.map, lat, lng, this.cemetery.name, 'red', detailUrl);
     
     if (this.userPosition) {
       this.mapService.addUserMarker(this.map, this.userPosition.lat, this.userPosition.lng);
+      try {
+        const route = await this.mapService.renderRoute(this.map, this.userPosition, { lat, lng });
+        this.cemeteryDistance = route.distanceKm;
+        this.cemeteryDuration = route.durationText;
+      } catch (error) {
+        console.warn('Impossibile tracciare il percorso:', error);
+        this.cemeteryDistance = this.calculateDistance(this.userPosition, this.cemetery);
+      }
     }
   }
 
@@ -139,6 +146,22 @@ ngOnInit() {
       Math.sin(dLng / 2) * Math.sin(dLng / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
+  }
+
+  getGoogleMapsLink(): string {
+    if (!this.cemetery) {
+      return 'https://www.google.com/maps';
+    }
+
+    const [lng, lat] = this.cemetery.location.coordinates;
+    const destination = `${lat},${lng}`;
+
+    if (!this.userPosition) {
+      return `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
+    }
+
+    const origin = `${this.userPosition.lat},${this.userPosition.lng}`;
+    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
   }
 
   searchDeceased() {

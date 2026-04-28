@@ -47,7 +47,10 @@
               <span *ngIf="cem.distance" class="distance-badge">{{ (cem.distance | number:'1.1-1') }} km</span>
             </p>
             <p class="card-text flex-grow-1">{{ cem.description }}</p>
-            <button (click)="goToDetail(cem._id)" class="btn btn-blue w-100 mt-auto">
+            <a [href]="getGoogleMapsLink(cem)" target="_blank" rel="noopener" class="btn btn-outline-secondary w-100 mb-2">
+              Vai su Google Maps
+            </a>
+            <button (click)="goToDetail(cem._id)" class="btn btn-blue w-100">
               Esplora Pianta
             </button>
           </div>

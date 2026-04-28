@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GeolocationService } from '../../Services/geolocation.service';
 import { CemeteryService } from '../../Services/cemetery.service';
+import { LeafletMapService } from '../../Services/leaflet-map.service';
 import { Cemetery } from '../../Interfaces/Cemetery';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
@@ -29,6 +30,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private geo: GeolocationService,
     private cemeteryService: CemeteryService,
+    private mapService: LeafletMapService,
     private router: Router
   ) {}
 
@@ -50,17 +52,18 @@ export class HomeComponent implements OnInit {
 
   private loadCemeteries() {
     this.cemeteryService.getAllCemeteries().subscribe({
-      next: (data) => {
+      next: async (data) => {
         this.cemeteries = data.map(cem => ({
           ...cem,
           distance: this.userPosition ? this.calculateDistance(this.userPosition, cem) : undefined
         }));
-        
-        if (this.userPosition) {
-          this.updateCemeteryDistances();
-        }
-        
+
         this.filteredCemeteries = [...this.cemeteries];
+
+        if (this.userPosition) {
+          await this.updateCemeteryRouteDistances();
+        }
+
         console.log(this.cemeteries);
       },
       error: (err) => {
@@ -68,6 +71,35 @@ export class HomeComponent implements OnInit {
         this.errorMessage = 'Impossibile caricare i cimiteri. Riprova più tardi.';
       }
     });
+  }
+
+  private async updateCemeteryRouteDistances() {
+    if (!this.userPosition || !this.cemeteries.length) {
+      return;
+    }
+
+    try {
+      const destinations = this.cemeteries.map(cem => ({ lat: cem.lat, lng: cem.lng }));
+      const distances = await this.mapService.getRouteDistances(this.userPosition, destinations);
+
+      this.cemeteries = this.cemeteries.map((cem, index) => ({
+        ...cem,
+        distance: distances[index] != null ? distances[index] : cem.distance
+      }));
+
+      this.filteredCemeteries = this.filteredCemeteries.map(cem => {
+        const index = this.cemeteries.findIndex(item => item._id === cem._id);
+        return {
+          ...cem,
+          distance: index >= 0 ? this.cemeteries[index].distance : cem.distance
+        };
+      });
+
+      this.cemeteries.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+      this.filteredCemeteries.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+    } catch (error) {
+      console.warn('Impossibile calcolare la distanza in base al percorso:', error);
+    }
   }
 
   private calculateDistance(pos: { lat: number; lng: number }, cem: Cemetery): number {
@@ -108,6 +140,15 @@ export class HomeComponent implements OnInit {
     console.error('ID cimitero non valido');
   }
 }
+
+  getGoogleMapsLink(cem: Cemetery): string {
+    const destination = `${cem.lat},${cem.lng}`;
+    if (!this.userPosition) {
+      return `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
+    }
+    const origin = `${this.userPosition.lat},${this.userPosition.lng}`;
+    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+  }
 
   goToScan() {
     this.router.navigate(['/scan']);

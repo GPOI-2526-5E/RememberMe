@@ -8,7 +8,9 @@
     <p class="mb-2" *ngIf="cemetery.city || cemetery.country">
       <i class="bi bi-map"></i> {{ cemetery.city }}{{ cemetery.city && cemetery.country ? ', ' : '' }}{{ cemetery.country }}
     </p>
-    <p class="mb-2" *ngIf="cemeteryDistance"><i class="bi bi-compass"></i> <strong>Distanza dalla tua posizione: {{ (cemeteryDistance | number:'1.1-1') }} km</strong></p>
+    <p class="mb-2" *ngIf="cemeteryDistance"><i class="bi bi-compass"></i> <strong>Distanza percorso: {{ (cemeteryDistance | number:'1.1-1') }} km</strong></p>
+    <p class="mb-2" *ngIf="cemeteryDuration"><i class="bi bi-clock"></i> <strong>Durata stimata: {{ cemeteryDuration }}</strong></p>
+    <p class="mb-2" *ngIf="cemetery"><a [href]="getGoogleMapsLink()" target="_blank" rel="noopener" class="btn btn-outline-primary">Apri il percorso in Google Maps</a></p>
   </div>
   <p class="lead">{{ cemetery.description }}</p>
 

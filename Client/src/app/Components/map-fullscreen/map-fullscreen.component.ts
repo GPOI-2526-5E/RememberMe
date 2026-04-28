@@ -24,6 +24,7 @@ export class MapFullscreenComponent implements OnInit, AfterViewInit {
   userLocation?: { lat: number; lng: number };
   errorMessage = '';
   private map: any;
+  private userMarker: any;
   private viewReady = false;
 
   constructor(
@@ -60,7 +61,11 @@ export class MapFullscreenComponent implements OnInit, AfterViewInit {
     this.geolocationService.getCurrentPosition()
       .then((location) => {
         this.userLocation = location;
-        this.tryInitializeMap();
+        if (this.map) {
+          this.centerOnUserLocation();
+        } else {
+          this.tryInitializeMap();
+        }
       })
       .catch((err) => {
         console.warn('Geolocalizzazione non disponibile', err);
@@ -69,36 +74,79 @@ export class MapFullscreenComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private tryInitializeMap() {
-    if (!this.viewReady || !this.cemeteries.length || this.map) {
+  private async tryInitializeMap() {
+    if (!this.viewReady || !this.cemeteries.length) {
       return;
     }
 
-    const centerLat = this.userLocation?.lat ?? (this.cemeteries[0].lat ?? 41.9028); // Default to Rome, Italy
-    const centerLng = this.userLocation?.lng ?? (this.cemeteries[0].lng ?? 12.4964);
-    const zoom = this.userLocation ? 12 : 6;
+    if (!this.map) {
+      const centerLat = this.userLocation?.lat ?? (this.cemeteries[0].lat ?? 41.9028); // Default to Rome, Italy
+      const centerLng = this.userLocation?.lng ?? (this.cemeteries[0].lng ?? 12.4964);
+      const zoom = this.userLocation ? 12 : 8;
 
-    this.map = this.mapService.initMap(this.fullscreenMap.nativeElement, centerLat, centerLng, zoom);
+      this.map = await this.mapService.initMap(this.fullscreenMap.nativeElement, centerLat, centerLng, zoom);
 
-    if (this.userLocation) {
-      this.mapService.addMarker(this.map, this.userLocation.lat, this.userLocation.lng, 'La tua posizione', 'blue');
-    }
-
-    this.cemeteries.forEach((cemetery) => {
-      if (cemetery.lat !== undefined && cemetery.lng !== undefined) {
-        this.mapService.addMarker(this.map, cemetery.lat, cemetery.lng, cemetery.name, 'red');
+      if (this.userLocation) {
+        this.centerOnUserLocation();
       }
-    });
 
-    const bounds = this.cemeteries
-      .filter((cemetery) => cemetery.lat !== undefined && cemetery.lng !== undefined)
-      .map((cemetery) => [cemetery.lat!, cemetery.lng!] as [number, number]);
-    if (this.userLocation) {
-      bounds.push([this.userLocation.lat, this.userLocation.lng]);
+      this.cemeteries.forEach((cemetery) => {
+        if (cemetery.lat !== undefined && cemetery.lng !== undefined) {
+          const marker = this.mapService.addMarker(this.map, cemetery.lat, cemetery.lng, cemetery.name, 'red');
+          marker.on('click', () => this.onCemeteryMarkerClick(cemetery, marker));
+        }
+      });
+
+      if (!this.userLocation) {
+        const positions = this.cemeteries
+          .filter((cemetery) => cemetery.lat !== undefined && cemetery.lng !== undefined)
+          .map((cemetery) => ({ lat: cemetery.lat!, lng: cemetery.lng! }));
+        if (positions.length) {
+          this.mapService.fitBounds(this.map, positions);
+        }
+      }
+    }
+  }
+
+  private centerOnUserLocation() {
+    if (!this.map || !this.userLocation) {
+      return;
     }
 
-    if (bounds.length) {
-      this.map.fitBounds(bounds as any, { padding: [70, 70] });
+    if (this.userMarker) {
+      this.map.removeLayer(this.userMarker);
+    }
+
+    this.userMarker = this.mapService.addUserMarker(this.map, this.userLocation.lat, this.userLocation.lng);
+    this.map.setView([this.userLocation.lat, this.userLocation.lng], 12);
+  }
+
+  private async onCemeteryMarkerClick(cemetery: Cemetery, marker: any) {
+    const [lng, lat] = cemetery.location.coordinates;
+    const destination = { lat, lng };
+    const origin = this.userLocation ?? null;
+
+    if (origin) {
+      try {
+        const route = await this.mapService.renderRoute(this.map, origin, destination);
+        const googleUrl = this.mapService.getGoogleMapsDirectionLink(origin, destination);
+        const content = `
+          <div style="max-width:260px; font-family: Arial, sans-serif;">
+            <div style="font-size:1rem; font-weight:700; margin-bottom:0.5rem;">${cemetery.name}</div>
+            ${cemetery.image ? `<img src="${cemetery.image}" alt="${cemetery.name}" style="width:100%; height:120px; object-fit:cover; border-radius:10px; margin-bottom:0.75rem;"/>` : ''}
+            <div style="margin-bottom:0.5rem;">Distanza percorso: <strong>${route.distanceKm.toFixed(1)} km</strong></div>
+            <div style="margin-bottom:0.75rem;">Durata stimata: <strong>${route.durationText}</strong></div>
+            <a href="${googleUrl}" target="_blank" rel="noopener" style="display:inline-block; background:#007bff; color:#fff; text-decoration:none; padding:0.5rem 0.75rem; border-radius:8px;">Apri Google Maps</a>
+          </div>
+        `;
+        marker.bindPopup(content).openPopup();
+      } catch (error) {
+        const googleUrl = this.mapService.getGoogleMapsDirectionLink(origin, destination);
+        marker.bindPopup(`<strong>${cemetery.name}</strong><br/>Impossibile calcolare il percorso. <br/><a href="${googleUrl}" target="_blank" rel="noopener">Apri Google Maps</a>`).openPopup();
+      }
+    } else {
+      const googleUrl = this.mapService.getGoogleMapsDirectionLink(null, destination);
+      marker.bindPopup(`<strong>${cemetery.name}</strong><br/>Imposta prima la tua posizione.<br/><a href="${googleUrl}" target="_blank" rel="noopener">Apri Google Maps</a>`).openPopup();
     }
   }
 

@@ -91,6 +91,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
   box-shadow: 0 8px 32px rgba(255, 87, 87, 0.3);
   max-width: 500px;
@@ -151,6 +152,7 @@
   border-radius: 12px;
   padding: 1rem;
   z-index: 1000;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -196,10 +198,29 @@
 }
 
 .marker {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
 }
 
 :host-context(.light-theme) .marker {
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.marker-blue {
+  background: #1e90ff;
+}
+
+.marker-red {
+  background: #ff4d4d;
+}
+
+.marker-route {
+  width: 32px;
+  height: 6px;
+  border-radius: 4px;
+  background: #007bff;
 }
 
