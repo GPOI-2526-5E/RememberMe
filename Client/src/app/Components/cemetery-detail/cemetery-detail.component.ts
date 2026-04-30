@@ -7,6 +7,7 @@ import { CemeteryService } from '../../Services/cemetery.service';
 import { LeafletMapService } from '../../Services/leaflet-map.service';
 import { AiHelperService } from '../../Services/ai-helper.service';
 import { GeolocationService } from '../../Services/geolocation.service';
+import { AuthService } from '../../Services/auth.service';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
@@ -35,6 +36,8 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
   userPosition: { lat: number; lng: number } | null = null;
   cemeteryDistance: number | undefined;
   cemeteryDuration: string | undefined;
+  isLoggedIn: boolean = false;
+  loginWarningKey: string | null = null;
 
   @ViewChild('mapContainer') mapContainer!: ElementRef;
   private map: any;
@@ -45,10 +48,18 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
     private cemeteryService: CemeteryService,
     private mapService: LeafletMapService,
     private aiService: AiHelperService,
-    private geoService: GeolocationService
+    private geoService: GeolocationService,
+    private authService: AuthService
   ) {}
 
 ngOnInit() {
+  this.authService.user$.subscribe(user => {
+    this.isLoggedIn = !!user;
+    if (!this.isLoggedIn) {
+      this.loginWarningKey = null;
+    }
+  });
+
   const id = this.route.snapshot.paramMap.get('id');
   if (!id) {
     this.router.navigate(['/']);
@@ -173,6 +184,23 @@ ngOnInit() {
         d.fullName.toLowerCase().includes(term)
       );
     }
+  }
+
+  viewStory(deceased: Deceased) {
+    const key = deceased._id || deceased.fullName;
+    if (!this.authService.isLoggedIn()) {
+      this.loginWarningKey = key;
+      return;
+    }
+
+    this.loginWarningKey = null;
+    const user = this.authService.getCurrentUser();
+    if (user?.role === 'employee') {
+      this.aiAnswer = `Dipendente ${user.fullName || 'utente'} può accedere alla storia di ${deceased.fullName}.`;
+    } else {
+      this.aiAnswer = `${user?.username || 'Utente'} sta visualizzando la storia di ${deceased.fullName}.`;
+    }
+    setTimeout(() => this.aiAnswer = '', 3000);
   }
   
   askAI(question: string) {

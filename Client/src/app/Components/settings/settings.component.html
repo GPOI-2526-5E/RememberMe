@@ -37,11 +37,22 @@
         <div class="profile-info">
           <h3>{{ userName }}</h3>
           <p>{{ userEmail }}</p>
-          <span class="member-badge" *ngIf="isPremium">
-            <i class="bi bi-star-fill"></i> Premium
-          </span>
+          <div class="role-badges">
+            <span class="member-badge" *ngIf="currentRole === 'employee'">
+              <i class="bi bi-person-badge"></i> Dipendente
+            </span>
+            <span class="member-badge" *ngIf="currentRole === 'user'">
+              <i class="bi bi-person"></i> Utente
+            </span>
+          </div>
+          <div class="profile-detail" *ngIf="currentRole === 'employee'">
+            <p>Municipalità: {{ municipalityId || 'Non specificata' }}</p>
+          </div>
+          <div class="profile-detail" *ngIf="currentRole === 'user'">
+            <p>Ricordi assegnati: {{ assignedDeceasedCount }}</p>
+          </div>
         </div>
-        <button class="logout-btn" (click)="logout()">
+        <button class="logout-btn" (click)="logout()" title="Esci" aria-label="Esci">
           <i class="bi bi-box-arrow-right"></i>
         </button>
       </div>

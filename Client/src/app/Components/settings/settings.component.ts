@@ -7,6 +7,7 @@ import { NavbarComponent } from '../../Components/navbar/navbar.component';
 import { CookieBannerComponent } from '../../Components/cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../../Components/bottom-bar/bottom-bar.component';
 import { FooterComponent } from '../../Components/footer/footer.component';
+import { AuthService, AuthUser } from '../../Services/auth.service';
 
 interface User {
   name: string;
@@ -30,6 +31,9 @@ export class SettingsComponent implements OnInit {
   isLoggedIn: boolean = false;
   userName: string = '';
   userEmail: string = '';
+  currentRole: 'user' | 'employee' | null = null;
+  municipalityId: string | boolean = '';
+  assignedDeceasedCount: number = 0;
   userAvatar: string = '';
   isPremium: boolean = false;
 
@@ -53,14 +57,13 @@ export class SettingsComponent implements OnInit {
   registerPassword: string = '';
   registerConfirmPassword: string = '';
   acceptTerms: boolean = false;
-  userAccounts: Array<{ name: string; email: string; password: string; isPremium: boolean; avatar?: string }> = [];
 
   constructor(
     private router: Router,
-    private location: Location
+    private location: Location,
+    private authService: AuthService
   ) {
     this.loadSettings();
-    this.loadUserAccounts();
     this.checkLoginStatus();
     this.calculateCacheSize();
   }
@@ -86,32 +89,6 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private loadUserAccounts(): void {
-    const storedAccounts = localStorage.getItem('userAccounts');
-    if (storedAccounts) {
-      try {
-        this.userAccounts = JSON.parse(storedAccounts) || [];
-      } catch {
-        this.userAccounts = [];
-      }
-    }
-
-    if (this.userAccounts.length === 0) {
-      this.userAccounts = [{
-        name: 'Utente Test',
-        email: 'test@rememberme.app',
-        password: 'Test1234',
-        isPremium: false,
-        avatar: ''
-      }];
-      this.saveUserAccounts();
-    }
-  }
-
-  private saveUserAccounts(): void {
-    localStorage.setItem('userAccounts', JSON.stringify(this.userAccounts));
-  }
-
   private saveSettings(): void {
     const settings = {
       theme: this.currentTheme,
@@ -123,19 +100,24 @@ export class SettingsComponent implements OnInit {
   }
 
   private checkLoginStatus(): void {
-    const user = localStorage.getItem('currentUser');
-    if (user) {
-      try {
-        const userData = JSON.parse(user);
-        this.isLoggedIn = true;
-        this.userName = userData.name || 'Utente';
-        this.userEmail = userData.email || '';
-        this.userAvatar = userData.avatar || '';
-        this.isPremium = userData.isPremium || false;
-      } catch (e) {
-        console.error('Error loading user data:', e);
-      }
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser) {
+      this.isLoggedIn = true;
+      this.userName = currentUser.fullName || currentUser.username || 'Utente';
+      this.userEmail = currentUser.email || '';
+      this.currentRole = currentUser.role;
+      this.municipalityId = currentUser.municipalityId || '';
+      this.assignedDeceasedCount = currentUser.assignedDeceased?.length || 0;
     }
+
+    this.authService.user$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      this.userName = user?.fullName || user?.username || '';
+      this.userEmail = user?.email || '';
+      this.currentRole = user?.role || null;
+      this.municipalityId = user?.municipalityId || '';
+      this.assignedDeceasedCount = user?.assignedDeceased?.length || 0;
+    });
   }
 
   private listenToSystemTheme(): void {
@@ -221,10 +203,10 @@ export class SettingsComponent implements OnInit {
         this.showToast('Cache cancellata con successo', 'success');
 
         const settings = localStorage.getItem('appSettings');
-        const user = localStorage.getItem('currentUser');
+        const user = localStorage.getItem('rememberme_currentUser');
         localStorage.clear();
         if (settings) localStorage.setItem('appSettings', settings);
-        if (user) localStorage.setItem('currentUser', user);
+        if (user) localStorage.setItem('rememberme_currentUser', user);
       }, 1000);
     }
   }
@@ -241,8 +223,6 @@ export class SettingsComponent implements OnInit {
 
   closeModal(): void {
     this.showLoginModal = false;
-    this.showRegisterModal = false;
-    this.resetForms();
   }
 
   switchToRegister(): void {
@@ -262,72 +242,25 @@ export class SettingsComponent implements OnInit {
     }
 
     const email = this.loginEmail.trim().toLowerCase();
-    const account = this.userAccounts.find(user => user.email.toLowerCase() === email && user.password === this.loginPassword);
 
-    if (!account) {
-      this.showToast('Email o password non validi', 'error');
-      return;
-    }
+    this.authService.login(email, this.loginPassword).subscribe({
+      next: (account) => {
+        this.isLoggedIn = true;
+        this.userName = account.fullName || account.username || 'Utente';
+        this.userEmail = account.email;
+        this.currentRole = account.role;
+        this.municipalityId = account.municipalityId || '';
+        this.assignedDeceasedCount = account.assignedDeceased?.length || 0;
 
-    setTimeout(() => {
-      this.isLoggedIn = true;
-      this.userName = account.name;
-      this.userEmail = account.email;
-      this.userAvatar = account.avatar || '';
-      this.isPremium = account.isPremium;
-
-      localStorage.setItem('currentUser', JSON.stringify(account));
-      sessionStorage.setItem('loginSuccessMessage', 'Benvenuto, accesso effettuato con successo!');
-
-      this.closeModal();
-      this.router.navigate(['/']);
-    }, 500);
-  }
-
-  handleRegister(event: Event): void {
-    event.preventDefault();
-
-    if (!this.registerName || !this.registerEmail || !this.registerPassword) {
-      this.showToast('Compila tutti i campi', 'warning');
-      return;
-    }
-    if (this.registerPassword !== this.registerConfirmPassword) {
-      this.showToast('Le password non coincidono', 'warning');
-      return;
-    }
-    if (!this.acceptTerms) {
-      this.showToast('Devi accettare i termini di servizio', 'warning');
-      return;
-    }
-
-    const email = this.registerEmail.trim().toLowerCase();
-    if (this.userAccounts.some(user => user.email.toLowerCase() === email)) {
-      this.showToast('Email già registrata', 'warning');
-      return;
-    }
-
-    const newAccount = {
-      name: this.registerName.trim(),
-      email,
-      password: this.registerPassword,
-      isPremium: false,
-      avatar: ''
-    };
-
-    this.userAccounts.push(newAccount);
-    this.saveUserAccounts();
-
-    setTimeout(() => {
-      this.isLoggedIn = true;
-      this.userName = newAccount.name;
-      this.userEmail = newAccount.email;
-      this.userAvatar = '';
-      this.isPremium = newAccount.isPremium;
-
-      localStorage.setItem('currentUser', JSON.stringify(newAccount));
-      this.closeModal();
-      this.showToast('Registrazione completata con successo', 'success');
-    }, 500);
+        sessionStorage.setItem('loginSuccessMessage', `Benvenuto ${this.userName}! Accesso effettuato con successo.`);
+        this.closeModal();
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        const message = error?.error?.message || 'Email o password non validi';
+        this.showToast(message, 'error');
+      }
+    });
   }
 
   logout(): void {
@@ -337,19 +270,9 @@ export class SettingsComponent implements OnInit {
       this.userEmail = '';
       this.userAvatar = '';
       this.isPremium = false;
-      localStorage.removeItem('currentUser');
+      this.authService.logout();
       this.showToast('Logout effettuato', 'info');
     }
-  }
-
-  private resetForms(): void {
-    this.loginEmail = '';
-    this.loginPassword = '';
-    this.registerName = '';
-    this.registerEmail = '';
-    this.registerPassword = '';
-    this.registerConfirmPassword = '';
-    this.acceptTerms = false;
   }
 
   openPrivacyPolicy(): void { window.open('https://example.com/privacy', '_blank'); }

@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
 const Cemetery = require('./Models/Cemetery');
 const Deceased = require('./Models/Deceased');
 const Employees = require('./Models/Employees');
@@ -19,6 +20,75 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use((req, res, next) => {
   console.log(`[${new Date().toLocaleTimeString()}] Richiesta: ${req.method} ${req.url}`);
   next();
+});
+
+// Autenticazione
+app.post('/api/users', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email e password sono necessari' });
+    }
+
+    console.log('--- LOGIN ATTEMPT ---');
+    console.log('Email ricevuta:', email);
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const emailQuery = { email: { $regex: `^${normalizedEmail}$`, $options: 'i' } };
+    let authUser = null;
+
+    const employee = await Employees.findOne(emailQuery);
+    console.log('Employee trovato:', employee?.email);
+    console.log('passwordHash employee:', employee?.passwordHash);
+
+    if (employee) {
+      const valid = await bcrypt.compare(password, employee.passwordHash || '');
+      console.log('Password employee valida:', valid);
+      if (valid) {
+        authUser = {
+          role: 'employee',
+          fullName: employee.fullName,
+          email: employee.email,
+          employeeId: employee._id,
+          municipalityId: employee.municipalityId,
+        };
+      }
+    }
+
+    if (!authUser) {
+      let user = await Users.findOne(emailQuery);
+      if (!user) {
+        user = await Users.findOne({ username: { $regex: `^${normalizedEmail}$`, $options: 'i' } });
+      }
+      console.log('User trovato:', user?.email);
+      console.log('passwordHash user:', user?.passwordHash);
+
+      if (user) {
+        const valid = await bcrypt.compare(password, user.passwordHash || '');
+        console.log('Password user valida:', valid);
+        if (valid) {
+          authUser = {
+            role: 'user',
+            username: user.username,
+            email: user.email,
+            userId: user._id,
+            municipalityId: user.municipalityId,
+            assignedDeceased: user.assignedDeceased || [],
+          };
+        }
+      }
+    }
+
+    if (!authUser) {
+      return res.status(401).json({ message: 'Email o password non validi' });
+    }
+
+    res.json(authUser);
+  } catch (err) {
+    console.error('Errore login:', err);
+    res.status(500).json({ message: 'Errore interno durante il login' });
+  }
 });
 
 // Ricerca defunti per nome
@@ -41,9 +111,7 @@ app.get('/api/Deceaseds/search', async (req, res) => {
 app.get('/api/Cemeteries', async (req, res) => {
   try {
     const cemeteries = await Cemetery.find();
-
     res.json(cemeteries);
-    
   } catch (err) {
     console.error('Errore caricamento cimiteri:', err);
     res.status(500).json({ message: err.message });
@@ -59,7 +127,6 @@ app.get('/api/Cemeteries/:id', async (req, res) => {
     }
 
     res.json(cemetery);
-
   } catch (err) {
     console.error('Errore:', err);
     res.status(500).json({ message: err.message });
@@ -71,32 +138,26 @@ app.get('/api/Cemeteries/:id/Deceased', async (req, res) => {
   try {
     const cemeteryId = req.params.id;
     
-    // Verifica che il cimitero esista
     const cemetery = await Cemetery.findById(cemeteryId);
     if (!cemetery) {
       return res.status(404).json({ message: 'Cimitero non trovato' });
     }
     
-    // PASSO 1: Trova tutte le tombe di questo cimitero
     const tombstones = await Tombstones.find({ cemeteryId: cemeteryId });
     console.log(`Tombe trovate per cimitero ${cemeteryId}:`, tombstones.length);
     
     if (tombstones.length === 0) {
-      return res.json([]); // Nessuna tomba, nessun defunto
+      return res.json([]);
     }
     
-    // PASSO 2: Estrai gli ID delle tombe
     const tombstoneIds = tombstones.map(t => t._id.toString());
-    console.log('ID Tombe:', tombstoneIds);
     
-    // PASSO 3: Trova i defunti che hanno graveId corrispondente a questi ID
     const deceased = await Deceased.find({ 
       graveId: { $in: tombstoneIds } 
     }).populate('assignedUsers');
     
     console.log(`Defunti trovati:`, deceased.length);
     
-    // PASSO 4: Arricchisci i dati con le info della tomba
     const enrichedDeceased = deceased.map(defunto => {
       const tombstone = tombstones.find(t => t._id.toString() === defunto.graveId);
       return {
@@ -111,7 +172,6 @@ app.get('/api/Cemeteries/:id/Deceased', async (req, res) => {
     });
     
     res.json(enrichedDeceased);
-    
   } catch (err) {
     console.error('Errore dettagliato:', err);
     res.status(500).json({ message: err.message, stack: err.stack });

@@ -79,9 +79,12 @@
       </div>
 
       <div class="deceased-card-footer">
-        <button class="btn btn-story">
+        <button class="btn btn-story" (click)="viewStory(d)">
           <i class="bi bi-book-half"></i> Visualizza storia
         </button>
+        <div *ngIf="loginWarningKey === (d._id || d.fullName)" class="login-warning mt-2 text-danger">
+          Devi effettuare il login per visualizzare la storia.
+        </div>
       </div>
     </div>
   </div>
