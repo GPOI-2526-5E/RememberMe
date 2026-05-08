@@ -222,6 +222,7 @@
   padding: 1.25rem;
   flex: 1;
   transition: all 0.3s ease;
+  overflow-wrap: anywhere;
 
   &:hover {
     border-color: var(--accent);

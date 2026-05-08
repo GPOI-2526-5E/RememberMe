@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Cemetery } from '../Interfaces/Cemetery';
 import { Deceased } from '../Interfaces/Deceased';
+import { Memory } from '../Interfaces/Memory';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class CemeteryService {
 
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/api/Cemeteries';
+  private deceasedApiUrl = 'http://localhost:3000/api/Deceaseds';
 
   getAllCemeteries(): Observable<Cemetery[]> {
     return this.http.get<Cemetery[]>(this.apiUrl).pipe(
@@ -41,6 +43,18 @@ export class CemeteryService {
 
   getDeceasedByCemetery(cemeteryId: string): Observable<Deceased[]> {
     return this.http.get<Deceased[]>(`${this.apiUrl}/${cemeteryId}/Deceased`);
+  }
+
+  getDeceasedById(deceasedId: string): Observable<Deceased> {
+    return this.http.get<Deceased>(`${this.deceasedApiUrl}/${deceasedId}`);
+  }
+
+  addMemory(deceasedId: string, memory: Partial<Memory>): Observable<Memory[]> {
+    return this.http.post<Memory[]>(`${this.deceasedApiUrl}/${deceasedId}/memories`, memory);
+  }
+
+  deleteMemory(deceasedId: string, memoryId: string): Observable<Memory[]> {
+    return this.http.delete<Memory[]>(`${this.deceasedApiUrl}/${deceasedId}/memories/${memoryId}`);
   }
 
   searchDeceased(name: string): Observable<Deceased[]> {

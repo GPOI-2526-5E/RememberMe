@@ -7,13 +7,11 @@ import { CemeteryService } from '../../Services/cemetery.service';
 import { LeafletMapService } from '../../Services/leaflet-map.service';
 import { AiHelperService } from '../../Services/ai-helper.service';
 import { GeolocationService } from '../../Services/geolocation.service';
-import { AuthService } from '../../Services/auth.service';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { BottomBarComponent } from '../bottom-bar/bottom-bar.component';
 import { FooterComponent } from '../footer/footer.component';
-import { MemorialCandleComponent } from '../memorial-candle/memorial-candle.component';
 import { MemoriesTimelineComponent } from '../memories-timeline/memories-timeline.component';
 
 import { Cemetery } from '../../Interfaces/Cemetery';
@@ -22,7 +20,7 @@ import { Deceased } from '../../Interfaces/Deceased';
 @Component({
   selector: 'app-cemetery-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MemorialCandleComponent, MemoriesTimelineComponent,NavbarComponent, CookieBannerComponent, BottomBarComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, MemoriesTimelineComponent, NavbarComponent, CookieBannerComponent, BottomBarComponent, FooterComponent],
   templateUrl: './cemetery-detail.component.html',
   styleUrls: ['./cemetery-detail.component.scss']
 })
@@ -31,13 +29,13 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
   cemetery: Cemetery | undefined;
   allDeceased: Deceased[] = [];
   filteredDeceased: Deceased[] = [];
+  selectedDeceased: Deceased | null = null;
+  showDeceasedModal = false;
   searchTerm = '';
   aiAnswer = '';
   userPosition: { lat: number; lng: number } | null = null;
   cemeteryDistance: number | undefined;
   cemeteryDuration: string | undefined;
-  isLoggedIn: boolean = false;
-  loginWarningKey: string | null = null;
 
   @ViewChild('mapContainer') mapContainer!: ElementRef;
   private map: any;
@@ -48,18 +46,11 @@ export class CemeteryDetailComponent implements OnInit, AfterViewInit {
     private cemeteryService: CemeteryService,
     private mapService: LeafletMapService,
     private aiService: AiHelperService,
-    private geoService: GeolocationService,
-    private authService: AuthService
+    private geoService: GeolocationService
   ) {}
 
 ngOnInit() {
-  this.authService.user$.subscribe(user => {
-    this.isLoggedIn = !!user;
-    if (!this.isLoggedIn) {
-      this.loginWarningKey = null;
-    }
-  });
-
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   const id = this.route.snapshot.paramMap.get('id');
   if (!id) {
     this.router.navigate(['/']);
@@ -187,20 +178,20 @@ ngOnInit() {
   }
 
   viewStory(deceased: Deceased) {
-    const key = deceased._id || deceased.fullName;
-    if (!this.authService.isLoggedIn()) {
-      this.loginWarningKey = key;
-      return;
-    }
+    this.selectedDeceased = deceased;
+    this.showDeceasedModal = true;
+    setTimeout(() => {
+      const modal = document.querySelector('.deceased-modal');
+      if (modal) {
+        modal.scrollTop = 0;
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
+  }
 
-    this.loginWarningKey = null;
-    const user = this.authService.getCurrentUser();
-    if (user?.role === 'employee') {
-      this.aiAnswer = `Dipendente ${user.fullName || 'utente'} può accedere alla storia di ${deceased.fullName}.`;
-    } else {
-      this.aiAnswer = `${user?.username || 'Utente'} sta visualizzando la storia di ${deceased.fullName}.`;
-    }
-    setTimeout(() => this.aiAnswer = '', 3000);
+  closeDeceasedModal() {
+    this.selectedDeceased = null;
+    this.showDeceasedModal = false;
   }
   
   askAI(question: string) {

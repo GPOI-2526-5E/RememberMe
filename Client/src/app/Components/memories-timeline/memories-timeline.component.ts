@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Memory } from '../../Interfaces/Memory';
+import { CemeteryService } from '../../Services/cemetery.service';
 
 @Component({
   selector: 'app-memories-timeline',
@@ -10,7 +11,7 @@ import { Memory } from '../../Interfaces/Memory';
   templateUrl: './memories-timeline.component.html',
   styleUrls: ['./memories-timeline.component.scss']
 })
-export class MemoriesTimelineComponent implements OnInit {
+export class MemoriesTimelineComponent implements OnInit, OnChanges {
   @Input() deceasedId: string = '';
   @Input() deceasedName: string = '';
 
@@ -19,33 +20,62 @@ export class MemoriesTimelineComponent implements OnInit {
   newAuthor = '';
   newMessage = '';
   selectedType: 'memory' | 'message' | 'prayer' = 'memory';
+  loading = false;
+  errorMessage = '';
+  private maxMemories = 5;
+
+  constructor(private cemeteryService: CemeteryService) {}
 
   ngOnInit() {
     this.loadMemories();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['deceasedId'] && changes['deceasedId'].currentValue) {
+      this.loadMemories();
+    }
+  }
+
   addMemory() {
-    if (!this.newAuthor.trim() || !this.newMessage.trim()) {
+    if (!this.newAuthor.trim() || !this.newMessage.trim() || !this.deceasedId) {
       return;
     }
 
-    const memory: Memory = {
-      id: `memory_${Date.now()}`,
-      deceasedId: this.deceasedId,
-      author: this.newAuthor,
-      message: this.newMessage,
-      date: new Date().toISOString(),
-      type: this.selectedType
-    };
+    this.loading = true;
+    this.errorMessage = '';
 
-    this.memories.unshift(memory);
-    this.saveMemories();
-    this.resetForm();
+    this.cemeteryService.addMemory(this.deceasedId, {
+      author: this.newAuthor.trim(),
+      message: this.newMessage.trim(),
+      type: this.selectedType
+    }).subscribe({
+      next: (memories) => {
+        this.memories = this.sortAndLimit(memories);
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('Errore salvataggio ricordo:', error);
+        this.errorMessage = 'Impossibile salvare il ricordo. Riprova.';
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
   deleteMemory(id: string) {
-    this.memories = this.memories.filter(m => m.id !== id);
-    this.saveMemories();
+    if (!this.deceasedId) {
+      return;
+    }
+
+    this.cemeteryService.deleteMemory(this.deceasedId, id).subscribe({
+      next: (memories) => {
+        this.memories = this.sortAndLimit(memories);
+      },
+      error: (error) => {
+        console.error('Errore eliminazione ricordo:', error);
+      }
+    });
   }
 
   getIcon(type: string): string {
@@ -88,24 +118,31 @@ export class MemoriesTimelineComponent implements OnInit {
     return date.toLocaleDateString('it-IT');
   }
 
-  private saveMemories() {
-    const key = `memories_${this.deceasedId}`;
-    localStorage.setItem(key, JSON.stringify(this.memories));
+  private loadMemories() {
+    if (!this.deceasedId) {
+      this.memories = [];
+      return;
+    }
+
+    this.loading = true;
+    this.cemeteryService.getDeceasedById(this.deceasedId).subscribe({
+      next: (deceased) => {
+        this.memories = this.sortAndLimit(deceased.memories || []);
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento dei ricordi:', error);
+        this.memories = [];
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
-  private loadMemories() {
-    const key = `memories_${this.deceasedId}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try {
-        this.memories = JSON.parse(saved).sort((a: Memory, b: Memory) =>
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-      } catch (e) {
-        console.error('Errore nel caricamento dei ricordi:', e);
-        this.memories = [];
-      }
-    }
+  private sortAndLimit(memories: Memory[]) {
+    return [...memories]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, this.maxMemories);
   }
 
   private resetForm() {

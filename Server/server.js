@@ -107,6 +107,65 @@ app.get('/api/Deceaseds/search', async (req, res) => {
   }
 });
 
+app.get('/api/Deceaseds/:id', async (req, res) => {
+  try {
+    const deceased = await Deceased.findById(req.params.id).populate('assignedUsers');
+    if (!deceased) {
+      return res.status(404).json({ message: 'Defunto non trovato' });
+    }
+    res.json(deceased);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post('/api/Deceaseds/:id/memories', async (req, res) => {
+  try {
+    const { author, message, type } = req.body;
+
+    if (!author || !message) {
+      return res.status(400).json({ message: 'Autore e messaggio sono obbligatori' });
+    }
+
+    const deceased = await Deceased.findById(req.params.id);
+    if (!deceased) {
+      return res.status(404).json({ message: 'Defunto non trovato' });
+    }
+
+    const newMemory = {
+      id: new mongoose.Types.ObjectId().toString(),
+      deceasedId: deceased._id?.toString(),
+      author: author.trim(),
+      message: message.trim(),
+      date: new Date(),
+      type: ['memory', 'message', 'prayer'].includes(type) ? type : 'memory'
+    };
+
+    deceased.memories = [newMemory, ...(deceased.memories || [])].slice(0, 5);
+    await deceased.save();
+
+    res.status(201).json(deceased.memories);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.delete('/api/Deceaseds/:id/memories/:memoryId', async (req, res) => {
+  try {
+    const deceased = await Deceased.findById(req.params.id);
+    if (!deceased) {
+      return res.status(404).json({ message: 'Defunto non trovato' });
+    }
+
+    deceased.memories = (deceased.memories || []).filter(m => m.id !== req.params.memoryId).slice(0, 5);
+    await deceased.save();
+
+    res.json(deceased.memories);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Query per tutti i cimiteri
 app.get('/api/Cemeteries', async (req, res) => {
   try {

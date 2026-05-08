@@ -376,6 +376,214 @@ input.form-control {
   }
 }
 
+.deceased-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.deceased-modal {
+  width: min(100%, 1400px);
+  height: calc(100vh - 2rem);
+  max-height: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 28px;
+  padding: 3rem;
+  position: relative;
+  box-shadow: 0 50px 150px rgba(0, 0, 0, 0.4);
+  margin-top: 1rem;
+}
+
+.deceased-modal:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+}
+
+.modal-top {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+  margin-bottom: 2rem;
+}
+
+.modal-image {
+  width: 100%;
+  height: 380px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(223, 215, 173, 0.08) 0%, rgba(223, 215, 173, 0.04) 100%);
+  border: 1px solid rgba(223, 215, 173, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 1rem;
+}
+
+.modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-image.placeholder {
+  color: var(--accent);
+  font-size: 5.5rem;
+  opacity: 0.25;
+}
+
+.modal-header h3 {
+  margin: 0 0 1.25rem 0;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.modal-dates {
+  margin: 0 0 1.75rem 0;
+  color: var(--text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: center;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.modal-body {
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.modal-body > div:first-child {
+  background: linear-gradient(135deg, rgba(223, 215, 173, 0.06) 0%, rgba(223, 215, 173, 0.02) 100%);
+  border-left: 5px solid var(--accent);
+  padding: 2rem;
+  border-radius: 16px;
+  margin: 0;
+}
+
+.modal-body > div:first-child h4 {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.modal-body > div:first-child p {
+  margin: 0;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
+
+.modal-gallery h5,
+.modal-memories-section h4 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem;
+}
+
+.image-thumb {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.image-thumb:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  border-color: var(--accent);
+}
+
+.modal-memories-section {
+  padding-top: 2rem;
+  border-top: 2px solid rgba(223, 215, 173, 0.15);
+}
+
+@media (max-width: 1200px) {
+  .deceased-modal {
+    width: calc(100% - 2rem);
+    padding: 2.5rem;
+  }
+
+  .modal-top {
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .deceased-modal {
+    padding: 2rem;
+  }
+
+  .modal-top {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-image {
+    position: relative;
+    top: auto;
+    height: 320px;
+  }
+
+  .modal-header h3 {
+    font-size: 2rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .deceased-grid {
     grid-template-columns: 1fr;

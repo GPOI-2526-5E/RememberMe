@@ -35,6 +35,7 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     this.checkLoginSuccess();
     this.geo.getCurrentPosition().then(pos => {
       this.userPosition = pos;

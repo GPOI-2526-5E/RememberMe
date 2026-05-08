@@ -47,16 +47,7 @@ export class SettingsComponent implements OnInit {
 
   cacheSize: string = '0 MB';
 
-  showLoginModal: boolean = false;
-  showRegisterModal: boolean = false;
 
-  loginEmail: string = '';
-  loginPassword: string = '';
-  registerName: string = '';
-  registerEmail: string = '';
-  registerPassword: string = '';
-  registerConfirmPassword: string = '';
-  acceptTerms: boolean = false;
 
   constructor(
     private router: Router,
@@ -69,6 +60,7 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     this.applyTheme(this.currentTheme);
     this.applyFontSize();
     this.listenToSystemTheme();
@@ -212,55 +204,7 @@ export class SettingsComponent implements OnInit {
   }
 
   openLogin(): void {
-    this.showLoginModal = true;
-    this.showRegisterModal = false;
-  }
-
-  openRegister(): void {
-    this.showRegisterModal = true;
-    this.showLoginModal = false;
-  }
-
-  closeModal(): void {
-    this.showLoginModal = false;
-  }
-
-  switchToRegister(): void {
-    this.openRegister();
-  }
-
-  switchToLogin(): void {
-    this.openLogin();
-  }
-
-  handleLogin(event: Event): void {
-    event.preventDefault();
-
-    if (!this.loginEmail || !this.loginPassword) {
-      this.showToast('Inserisci email e password', 'warning');
-      return;
-    }
-
-    const email = this.loginEmail.trim().toLowerCase();
-
-    this.authService.login(email, this.loginPassword).subscribe({
-      next: (account) => {
-        this.isLoggedIn = true;
-        this.userName = account.fullName || account.username || 'Utente';
-        this.userEmail = account.email;
-        this.currentRole = account.role;
-        this.municipalityId = account.municipalityId || '';
-        this.assignedDeceasedCount = account.assignedDeceased?.length || 0;
-
-        sessionStorage.setItem('loginSuccessMessage', `Benvenuto ${this.userName}! Accesso effettuato con successo.`);
-        this.closeModal();
-        this.router.navigate(['/']);
-      },
-      error: (error) => {
-        const message = error?.error?.message || 'Email o password non validi';
-        this.showToast(message, 'error');
-      }
-    });
+    this.router.navigate(['/login']);
   }
 
   logout(): void {

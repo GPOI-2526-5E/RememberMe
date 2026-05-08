@@ -82,9 +82,6 @@
         <button class="btn btn-story" (click)="viewStory(d)">
           <i class="bi bi-book-half"></i> Visualizza storia
         </button>
-        <div *ngIf="loginWarningKey === (d._id || d.fullName)" class="login-warning mt-2 text-danger">
-          Devi effettuare il login per visualizzare la storia.
-        </div>
       </div>
     </div>
   </div>
@@ -96,34 +93,45 @@
   </div>
 </div>
 
-  <!-- Sezione Ricordi e Candela -->
-  <div *ngIf="filteredDeceased.length > 0" class="memorial-section">
-    <h4 class="section-title mb-4">
-      <i class="bi bi-heart-fill"></i>
-      Dedica un Ricordo a {{ filteredDeceased[0].fullName }}
-    </h4>
-    
-    <div class="row">
-      <div class="col-lg-6 mb-4">
-        <app-memorial-candle 
-          [deceasedId]="filteredDeceased[0]._id || filteredDeceased[0].fullName"
-          [deceasedName]="filteredDeceased[0].fullName">
-        </app-memorial-candle>
-      </div>
-      <div class="col-lg-6 mb-4">
-        <div class="memory-stats">
-          <div class="stat-card">
-            <i class="bi bi-book-heart"></i>
-            <h6>Scrivi un Ricordo</h6>
-            <p>Condividi i tuoi ricordi e messaggi speciali per questo defunto. I tuoi ricordi resteranno eterni.</p>
+  <div *ngIf="showDeceasedModal" class="deceased-modal-overlay" (click)="closeDeceasedModal()">
+    <div class="deceased-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeDeceasedModal()">✕</button>
+      <div class="modal-top">
+        <div class="modal-header no-image-header">
+          <h3>{{ selectedDeceased?.fullName }}</h3>
+          <p class="modal-dates">
+            <strong>Nato:</strong> {{ selectedDeceased?.birthDate | date:'dd/MM/yyyy' }}
+            <span *ngIf="selectedDeceased?.deathDate">→</span>
+            <strong *ngIf="selectedDeceased?.deathDate">Morto:</strong> {{ selectedDeceased?.deathDate | date:'dd/MM/yyyy' }}
+          </p>
+          <p *ngIf="selectedDeceased?.graveId"><strong>Tomba:</strong> {{ selectedDeceased?.graveId }}</p>
+          <p *ngIf="selectedDeceased?.assignedUsers?.length"><strong>In cura da:</strong> {{ selectedDeceased?.assignedUsers?.length || 0 }} utenti</p>
+          <div *ngIf="selectedDeceased?.graveDetails" class="grave-details">
+            <p *ngIf="selectedDeceased?.graveDetails?.section"><strong>Sezione:</strong> {{ selectedDeceased?.graveDetails?.section }}</p>
+            <p *ngIf="selectedDeceased?.graveDetails?.plotNumber"><strong>Plot:</strong> {{ selectedDeceased?.graveDetails?.plotNumber }}</p>
+            <p *ngIf="selectedDeceased?.graveDetails?.status"><strong>Stato:</strong> {{ selectedDeceased?.graveDetails?.status }}</p>
           </div>
         </div>
       </div>
+
+      <div class="modal-body">
+        <div>
+          <h4>La sua storia</h4>
+          <p *ngIf="selectedDeceased?.biography; else noBiography">{{ selectedDeceased?.biography }}</p>
+          <ng-template #noBiography>
+            <p class="text-muted">Storia non disponibile.</p>
+          </ng-template>
+        </div>
+
+        <div class="modal-memories-section">
+          <h4>Ricordi</h4>
+          <app-memories-timeline
+            [deceasedId]="selectedDeceased?._id || selectedDeceased?.fullName || ''"
+            [deceasedName]="selectedDeceased?.fullName || ''">
+          </app-memories-timeline>
+        </div>
+      </div>
     </div>
-    <app-memories-timeline 
-      [deceasedId]="filteredDeceased[0]._id || filteredDeceased[0].fullName"
-      [deceasedName]="filteredDeceased[0].fullName">
-    </app-memories-timeline>
   </div>
 
   <div class="mt-5 p-4 border rounded bg-light">

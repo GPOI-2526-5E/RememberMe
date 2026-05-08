@@ -264,20 +264,6 @@
   </footer>
 </div>
 
-<div class="modal-overlay" *ngIf="showLoginModal" (click)="closeModal()">
-  <div class="modal-content glass-card" (click)="$event.stopPropagation()">
-    <h2>Accedi</h2>
-    <form (submit)="handleLogin($event)">
-      <input type="email" placeholder="Email" [(ngModel)]="loginEmail" name="email" required>
-      <input type="password" placeholder="Password" [(ngModel)]="loginPassword" name="password" required>
-      <button type="submit" class="modal-btn primary">Accedi</button>
-    </form>
-    <button class="modal-close" (click)="closeModal()">
-      <i class="bi bi-x"></i>
-    </button>
-  </div>
-</div>
-
 <app-cookie-banner></app-cookie-banner>
 <app-bottom-bar></app-bottom-bar>
 <app-footer></app-footer>
