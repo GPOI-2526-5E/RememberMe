@@ -1,0 +1,204 @@
+.parenti-page {
+  min-height: 100vh;
+  background: var(--bg-main);
+  background-attachment: fixed;
+  padding-bottom: 120px;
+}
+
+.page-header-section {
+  text-align: center;
+  padding: 5rem 2rem 3rem;
+  position: relative;
+
+  .header-ornament {
+    font-size: 1.5rem;
+    color: var(--accent);
+    opacity: 0.6;
+    letter-spacing: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-title {
+    font-family: 'Citadel of Blackrose', cursive;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    color: var(--accent);
+    text-shadow: 0 0 40px var(--accent-glow);
+    margin: 0 0 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .page-subtitle {
+    color: var(--text-secondary);
+    opacity: 0.6;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+}
+
+.content-area {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+  opacity: 0.6;
+
+  i { font-size: 3rem; color: var(--accent); }
+
+  &.empty span {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    text-align: center;
+  }
+}
+
+.loading-orb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.deceased-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.75rem;
+}
+
+.deceased-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-soft);
+  animation: fadeInUp 0.5s ease both;
+
+  &:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-accent), var(--shadow-soft);
+
+    .card-photo img { transform: scale(1.06); }
+    .open-btn { background: var(--accent); color: black; }
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-photo {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s ease;
+  }
+
+  .photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(223, 215, 173, 0.05);
+    i { font-size: 4rem; color: var(--accent); opacity: 0.3; }
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--card-bg) 0%, transparent 60%);
+  }
+}
+
+.card-content {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.deceased-name {
+  font-family: 'Citadel of Blackrose', cursive;
+  font-size: 1.5rem;
+  color: var(--accent);
+  margin: 0 0 0.75rem;
+  line-height: 1.2;
+}
+
+.dates-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  margin-bottom: 0.75rem;
+
+  .date-item { display: flex; align-items: center; gap: 0.3rem; }
+  .date-divider { opacity: 0.4; }
+  i { color: var(--accent); font-size: 0.75rem; }
+}
+
+.epitaph {
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  opacity: 0.65;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+  border-left: 2px solid var(--accent-soft);
+  padding-left: 0.75rem;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.age-badge, .memories-badge {
+  background: var(--accent-soft);
+  border: 1px solid var(--border-light);
+  border-radius: 50px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.open-btn {
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}

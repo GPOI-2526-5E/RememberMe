@@ -1,0 +1,165 @@
+<app-navbar></app-navbar>
+<div class="profile-page" *ngIf="!loading && deceased">
+
+    <!-- Hero -->
+    <div class="hero-section">
+        <div class="hero-bg"
+            [style.background-image]="deceased.deceasedImage ? 'url(' + deceased.deceasedImage + ')' : 'none'">
+            <div class="hero-gradient"></div>
+        </div>
+        <div class="hero-content">
+            <div class="cover-frame">
+                <img *ngIf="deceased.deceasedImage" [src]="deceased.deceasedImage" [alt]="deceased.fullName">
+                <div class="cover-placeholder" *ngIf="!deceased.deceasedImage">
+                    <i class="bi bi-person"></i>
+                </div>
+            </div>
+            <div class="hero-info">
+                <!-- Epitaffio -->
+                <div class="epitaph-area" *ngIf="!editingEpitaph">
+                    <p class="epitaph-text" *ngIf="deceased.epitaph">"{{ deceased.epitaph }}"</p>
+                    <button class="edit-inline-btn"
+                        (click)="editingEpitaph = true; epitaphDraft = deceased.epitaph || ''">
+                        <i class="bi bi-pencil"></i>
+                        {{ deceased.biografy ? 'Modifica frase' : 'Aggiungi una frase' }}
+                    </button>
+                </div>
+                <div class="epitaph-edit" *ngIf="editingEpitaph">
+                    <input [(ngModel)]="epitaphDraft" class="epitaph-input" placeholder="Una frase per ricordarlo..."
+                        maxlength="120">
+                    <div class="edit-actions">
+                        <button class="btn-save-sm" (click)="saveEpitaph()" [disabled]="savingEpitaph">
+                            <i class="bi bi-check2"></i> Salva
+                        </button>
+                        <button class="btn-cancel-sm" (click)="editingEpitaph = false">Annulla</button>
+                    </div>
+                </div>
+
+                <h1 class="hero-name">{{ deceased.fullName }}</h1>
+                <div class="hero-dates">
+                    <span><i class="bi bi-star"></i> {{ deceased.birthDate | date:'dd MMMM yyyy' }}</span>
+                    <span class="dates-sep">✦</span>
+                    <span><i class="bi bi-moon-stars"></i> {{ deceased.deathDate | date:'dd MMMM yyyy' }}</span>
+                </div>
+                <span class="age-pill">{{ getAge() }} anni</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab nav -->
+    <div class="tab-nav">
+        <button class="tab-btn" [class.active]="activeTab === 'storia'" (click)="activeTab = 'storia'">
+            <i class="bi bi-book"></i> Storia
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'foto'" (click)="activeTab = 'foto'">
+            <i class="bi bi-images"></i> Foto
+            <span class="tab-badge" *ngIf="deceased.photos?.length">{{ deceased.photos.length }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'memorie'" (click)="activeTab = 'memorie'">
+            <i class="bi bi-chat-heart"></i> Ricordi
+            <span class="tab-badge" *ngIf="deceased.memories?.length">{{ deceased.memories.length }}</span>
+        </button>
+    </div>
+
+    <div class="tab-content">
+
+        <!-- TAB: Storia -->
+        <div class="tab-panel" *ngIf="activeTab === 'storia'">
+            <div class="story-view" *ngIf="!editingStory">
+                <p class="story-text" *ngIf="deceased.story">{{ deceased.story }}</p>
+                <div class="story-empty" *ngIf="!deceased.story">
+                    <i class="bi bi-feather"></i>
+                    <p>Nessuna storia ancora scritta.</p>
+                    <span>Racconta chi era, cosa amava, cosa lo rendeva speciale.</span>
+                </div>
+                <button class="btn-edit-story" (click)="editingStory = true; storyDraft = deceased.story || ''">
+                    <i class="bi bi-pencil-square"></i>
+                    {{ deceased.story ? 'Modifica storia' : 'Scrivi la sua storia' }}
+                </button>
+            </div>
+
+            <div class="story-editor" *ngIf="editingStory">
+                <textarea [(ngModel)]="storyDraft" class="story-textarea"
+                    placeholder="Racconta la sua storia, i suoi valori, i momenti più belli..." rows="12">
+        </textarea>
+                <div class="editor-actions">
+                    <button class="btn-save" (click)="saveStory()" [disabled]="savingStory">
+                        <i class="bi bi-cloud-check"></i>
+                        {{ savingStory ? 'Salvataggio...' : 'Salva storia' }}
+                    </button>
+                    <button class="btn-cancel" (click)="editingStory = false">Annulla</button>
+                </div>
+            </div>
+
+            <!-- Biografia originale se presente -->
+            <div class="biography-section" *ngIf="deceased.biography">
+                <h3 class="section-label"><i class="bi bi-info-circle"></i> Nota biografica</h3>
+                <p class="biography-text">{{ deceased.biography }}</p>
+            </div>
+        </div>
+
+        <!-- TAB: Foto -->
+        <div class="tab-panel" *ngIf="activeTab === 'foto'">
+            <div class="photo-upload-area">
+                <label class="upload-btn" [class.loading]="uploadingPhoto">
+                    <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden>
+                    <i class="bi bi-plus-circle"></i>
+                    {{ uploadingPhoto ? 'Caricamento...' : 'Aggiungi foto' }}
+                </label>
+            </div>
+
+            <div class="photos-empty" *ngIf="!deceased.images?.length && !uploadingPhoto">
+                <i class="bi bi-images"></i>
+                <p>Nessuna foto ancora aggiunta.</p>
+                <span>Le tue foto diventeranno parte del suo ricordo.</span>
+            </div>
+
+            <div class="photos-grid" *ngIf="deceased.images?.length">
+                <div class="photo-item" *ngFor="let photo of deceased.images; let i = index">
+                    <img [src]="photo" alt="Foto ricordo">
+                    <button class="photo-delete-btn" (click)="deletePhoto(i)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Ricordi/Commenti -->
+        <div class="tab-panel" *ngIf="activeTab === 'memorie'">
+            <div class="memories-empty" *ngIf="!deceased.memories?.length">
+                <i class="bi bi-chat-heart"></i>
+                <p>Nessun ricordo ancora condiviso.</p>
+            </div>
+
+            <div class="memories-list" *ngIf="deceased.memories?.length">
+                <div class="memory-card" *ngFor="let m of deceased.memories">
+                    <div class="memory-header">
+                        <div class="memory-author-info">
+                            <div class="memory-avatar">{{ m.author[0]?.toUpperCase() }}</div>
+                            <div>
+                                <span class="memory-author">{{ m.author }}</span>
+                                <span class="memory-date">{{ m.date | date:'dd MMM yyyy' }}</span>
+                            </div>
+                        </div>
+                        <div class="memory-type-badge" [class]="'type-' + m.type">
+                            <i class="bi" [class]="getMemoryIcon(m.type)"></i>
+                            {{ m.type === 'prayer' ? 'Preghiera' : m.type === 'message' ? 'Messaggio' : 'Ricordo' }}
+                        </div>
+                    </div>
+                    <p class="memory-message">{{ m.message }}</p>
+                    <button class="memory-delete-btn" (click)="deleteMemory(m.id)">
+                        <i class="bi bi-trash"></i> Elimina
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Loading state -->
+<div class="page-loading" *ngIf="loading">
+    <div class="loading-orb"></div>
+</div>
+
+<app-footer></app-footer>

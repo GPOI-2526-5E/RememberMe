@@ -5,13 +5,17 @@ import { QrScannerComponent } from './Components/qr-scanner/qr-scanner.component
 import { SettingsComponent } from './Components/settings/settings.component';
 import { MapFullscreenComponent } from './Components/map-fullscreen/map-fullscreen.component';
 import { LoginComponent } from './Components/login/login.component';
+import { ParentiComponent } from './Components/relatives/relatives.component';
+import { DeceasedProfileComponent } from './Components/deceased-profile/deceased-profile.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'detail/:id', component: CemeteryDetailComponent },
   { path: 'map', component: MapFullscreenComponent },
   { path: 'scan', component: QrScannerComponent },
-  { path: 'settings', component: SettingsComponent},
+  { path: 'settings', component: SettingsComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'parenti', component: ParentiComponent },
+  { path: 'parenti/:id', component: DeceasedProfileComponent },
   { path: '**', redirectTo: '' }
 ];

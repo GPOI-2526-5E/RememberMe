@@ -1,0 +1,76 @@
+<app-navbar></app-navbar>
+<div class="parenti-page">
+  <div class="page-header-section">
+    <div class="header-ornament">✦</div>
+    <h1 class="page-title">I Tuoi Cari</h1>
+    <p class="page-subtitle">Custodisci la loro memoria</p>
+  </div>
+
+  <div class="content-area">
+    <!-- Loading -->
+    <div class="state-container" *ngIf="loading">
+      <div class="loading-orb"></div>
+      <p>Caricamento...</p>
+    </div>
+
+    <!-- Errore -->
+    <div class="state-container error" *ngIf="!loading && error">
+      <i class="bi bi-exclamation-circle"></i>
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Nessun defunto -->
+    <div class="state-container empty" *ngIf="!loading && !error && deceased.length === 0">
+      <i class="bi bi-heart"></i>
+      <p>Nessun caro ancora associato al tuo profilo.</p>
+      <span>Contatta il personale del cimitero per l'attivazione.</span>
+    </div>
+
+    <!-- Lista defunti -->
+    <div class="deceased-grid" *ngIf="!loading && !error && deceased.length > 0">
+      <div
+        class="deceased-card"
+        *ngFor="let d of deceased; let i = index"
+        [style.animation-delay]="i * 0.1 + 's'"
+        (click)="openProfile(d._id)">
+
+        <div class="card-photo">
+          <img *ngIf="d.coverPhoto" [src]="d.coverPhoto" [alt]="d.fullName">
+          <div class="photo-placeholder" *ngIf="!d.coverPhoto">
+            <i class="bi bi-person"></i>
+          </div>
+          <div class="card-overlay"></div>
+        </div>
+
+        <div class="card-content">
+          <h2 class="deceased-name">{{ d.fullName }}</h2>
+
+          <div class="dates-row">
+            <span class="date-item">
+              <i class="bi bi-star"></i>
+              {{ d.birthDate | date:'dd/MM/yyyy' }}
+            </span>
+            <span class="date-divider">—</span>
+            <span class="date-item">
+              <i class="bi bi-moon"></i>
+              {{ d.deathDate | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+
+          <p class="epitaph" *ngIf="d.epitaph">"{{ d.epitaph }}"</p>
+
+          <div class="card-footer">
+            <span class="age-badge">{{ getAge(d.birthDate, d.deathDate) }} anni</span>
+            <span class="memories-badge" *ngIf="d.memories?.length">
+              <i class="bi bi-chat-heart"></i> {{ d.memories.length }}
+            </span>
+            <button class="open-btn">
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>
