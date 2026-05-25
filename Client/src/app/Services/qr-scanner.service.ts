@@ -7,15 +7,24 @@ export class QrScannerService {
 
   startScanner(containerId: string, onScan: (decodedText: string) => void) {
     this.html5QrCode = new Html5Qrcode(containerId);
-    this.html5QrCode.start(
+    return this.html5QrCode.start(
       { facingMode: 'environment' },
       { fps: 10, qrbox: { width: 250, height: 250 } },
       (decodedText) => onScan(decodedText),
       (error) => console.warn(error)
-    ).catch(console.error);
+    );
   }
 
   stopScanner() {
-    if (this.html5QrCode) this.html5QrCode.stop().catch(console.error);
+    if (!this.html5QrCode) {
+      return Promise.resolve();
+    }
+
+    return this.html5QrCode
+      .stop()
+      .then(() => this.html5QrCode?.clear())
+      .catch((error) => {
+        console.error(error);
+      });
   }
 }

@@ -1,9 +1,32 @@
 <app-navbar></app-navbar>
 <div class="container py-5 text-center pb-32">
   <h2 class="mb-4">Scannerizza il QR Code</h2>
+
+  <div class="mb-3">
+    <p class="lead">Consenti l'accesso alla fotocamera per leggere il QR del cimitero.</p>
+    <p class="text-muted">Il codice verrà riconosciuto automaticamente appena inquadrato.</p>
+  </div>
+
   <div id="reader" style="width: 100%; max-width: 400px; margin: 0 auto;"></div>
-  <p class="mt-4 text-muted">Inquadra il QR del cimitero</p>
-  <button (click)="router.navigate(['/'])" class="btn btn-secondary">Annulla</button>
+
+  <div *ngIf="errorMessage" class="alert alert-warning mt-4" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div class="d-flex justify-content-center gap-2 mt-4 flex-wrap">
+    <button (click)="retry()" class="btn btn-primary" [disabled]="scanning">Riprova fotocamera</button>
+    <button (click)="cancel()" class="btn btn-secondary">Annulla</button>
+  </div>
+
+  <div class="mt-5 text-start mx-auto" style="max-width: 600px;">
+    <h4>Cosa fare se il QR non viene letto</h4>
+    <ul class="text-muted">
+      <li>Verifica che la fotocamera sia collegata e il browser abbia il permesso.</li>
+      <li>Usa una luce sufficiente e inquadra bene il codice.</li>
+      <li>Se il browser chiede permesso, scegli <strong>Consenti</strong>.</li>
+    </ul>
+    <p class="small text-muted">Se il problema persiste, prova a ricaricare la pagina o a usare un altro browser.</p>
+  </div>
 </div>
 <app-cookie-banner></app-cookie-banner>
 <app-footer></app-footer>
