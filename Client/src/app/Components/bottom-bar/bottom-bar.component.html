@@ -26,6 +26,11 @@
         <i class="bi bi-shield-check"></i>
         <span>GESTIONE</span>
       </button>
+    } @else if (userRole === null) {
+      <button (click)="goToRegister()" class="hud-btn" [class.active]="activeSection === 'register'">
+        <i class="bi bi-person-plus"></i>
+        <span>REGISTRATI</span>
+      </button>
     }
 
     <button (click)="goToSettings()" class="hud-btn" [class.active]="activeSection === 'settings'">

@@ -112,6 +112,12 @@ export class BottomBarComponent implements OnInit, OnDestroy {
       this.activeSection = 'aggiungi-deceduto';
     });
   }
+
+  goToRegister(): void {
+    this.router.navigate(['/register']).then(() => {
+      this.activeSection = 'register';
+    });
+  }
   
   private smoothScrollToTop(): void {
     const currentScroll = window.pageYOffset;

@@ -1,5 +1,4 @@
 .register-page {
-  min-height: calc(100vh - 120px);
   padding: 3rem 1rem 6rem;
   display: flex;
   justify-content: center;
@@ -7,6 +6,7 @@
 }
 
 .register-card {
+  margin-top: 60px;
   width: min(720px, 100%);
   padding: 2rem;
   background: var(--panel-bg);

@@ -27,17 +27,12 @@
         <input id="password" type="password" [(ngModel)]="registerPassword" name="password" required placeholder="••••••••">
       </div>
 
-      <div class="form-row">
-        <label for="municipalityId">Municipalità</label>
-        <input id="municipalityId" type="text" [(ngModel)]="municipalityId" name="municipalityId" placeholder="ROMA_MUNICIPALITY_ID">
-      </div>
-
       <button type="submit" class="btn btn-blue register-btn" [disabled]="isSubmitting">
         {{ isSubmitting ? 'Registrazione in corso...' : 'Crea account' }}
       </button>
 
       <p class="login-link">
-        Hai già un account? <a routerLink="/login">Accedi</a>
+        Hai già un account? <a routerLink="/settings">Accedi</a>
       </p>
     </form>
   </div>

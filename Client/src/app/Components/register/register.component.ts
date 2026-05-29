@@ -19,7 +19,6 @@ export class RegisterComponent {
   registerPassword = '';
   registerFullName = '';
   registerUsername = '';
-  municipalityId = '';
   isSubmitting = false;
 
   constructor(
@@ -42,7 +41,6 @@ export class RegisterComponent {
       fullName: this.registerFullName.trim(),
       email: this.registerEmail.trim().toLowerCase(),
       password: this.registerPassword,
-      municipalityId: this.municipalityId.trim() || null,
       createdBy: 'SELF'
     };
 
@@ -50,7 +48,7 @@ export class RegisterComponent {
       next: () => {
         this.isSubmitting = false;
         this.notification.show('Registrazione completata. Accedi con le tue credenziali.', 'success');
-        this.router.navigate(['/login']);
+        this.router.navigate(['/settings']);
       },
       error: () => {
         this.isSubmitting = false;

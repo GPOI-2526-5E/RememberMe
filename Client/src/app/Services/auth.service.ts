@@ -54,7 +54,7 @@ export class AuthService {
       .pipe(tap(user => this.saveCurrentUser(user)));
   }
 
-  register(payload: { username: string; fullName: string; email: string; password: string; municipalityId?: string | null; createdBy?: string }): Observable<any> {
+  register(payload: { username: string; fullName: string; email: string; password: string; createdBy?: string }): Observable<any> {
     return this.http.post<any>(`${this.API_URL}/users/register`, payload);
   }
 
