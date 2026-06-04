@@ -20,13 +20,6 @@ app.use(express.json({
   limit: '10mb'
 }));
 
-// Gestione esplicita preflight OPTIONS
-app.options('/(.{*path})', cors({
-  origin: 'https://remember-me-ycog.vercel.app',
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connesso a MongoDB'))
   .catch(err => console.error('❌ Errore MongoDB:', err));
