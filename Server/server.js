@@ -21,7 +21,7 @@ app.use(express.json({
 }));
 
 // Gestione esplicita preflight OPTIONS
-app.options('*', cors({
+app.options('/(.*)', cors({
   origin: 'https://remember-me-ycog.vercel.app',
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
