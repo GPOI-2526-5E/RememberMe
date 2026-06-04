@@ -11,8 +11,21 @@ const Tombstones = require('./Models/Tombstones');
 const Users = require('./Models/Users');
 
 const app = express();
-app.use(cors());
-app.use(express.json({ limit: '10mb' })); // ✅ limit per le foto base64
+app.use(cors({
+  origin: 'https://remember-me-ycog.vercel.app',
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json({
+  limit: '10mb'
+}));
+
+// Gestione esplicita preflight OPTIONS
+app.options('*', cors({
+  origin: 'https://remember-me-ycog.vercel.app',
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connesso a MongoDB'))
@@ -28,12 +41,22 @@ app.use((req, res, next) => {
 // ════════════════════════════════════════════════════════
 app.post('/api/users', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const {
+      email,
+      password
+    } = req.body;
     if (!email || !password)
-      return res.status(401).json({ message: 'Email o password non validi' });
+      return res.status(401).json({
+        message: 'Email o password non validi'
+      });
 
     const normalizedEmail = email.trim().toLowerCase();
-    const emailQuery = { email: { $regex: `^${normalizedEmail}$`, $options: 'i' } };
+    const emailQuery = {
+      email: {
+        $regex: `^${normalizedEmail}$`,
+        $options: 'i'
+      }
+    };
     let authUser = null;
 
     const employee = await Employees.findOne(emailQuery);
@@ -51,8 +74,13 @@ app.post('/api/users', async (req, res) => {
     }
 
     if (!authUser) {
-      let user = await Users.findOne(emailQuery)
-        || await Users.findOne({ username: { $regex: `^${normalizedEmail}$`, $options: 'i' } });
+      let user = await Users.findOne(emailQuery) ||
+        await Users.findOne({
+          username: {
+            $regex: `^${normalizedEmail}$`,
+            $options: 'i'
+          }
+        });
 
       if (user) {
         const valid = await bcrypt.compare(password, user.passwordHash || '');
@@ -70,25 +98,45 @@ app.post('/api/users', async (req, res) => {
     }
 
     if (!authUser)
-      return res.status(401).json({ message: 'Email o password non validi' });
+      return res.status(401).json({
+        message: 'Email o password non validi'
+      });
 
     res.json(authUser);
   } catch (err) {
     console.error('Errore login:', err);
-    res.status(500).json({ message: 'Errore interno durante il login' });
+    res.status(500).json({
+      message: 'Errore interno durante il login'
+    });
   }
 });
 
 app.post('/api/users/register', async (req, res) => {
   try {
-    const { username, fullName, email, password, municipalityId, createdBy } = req.body;
+    const {
+      username,
+      fullName,
+      email,
+      password,
+      municipalityId,
+      createdBy
+    } = req.body;
     if (!username || !fullName || !email || !password)
-      return res.status(400).json({ message: 'Dati di registrazione incompleti' });
+      return res.status(400).json({
+        message: 'Dati di registrazione incompleti'
+      });
 
     const normalizedEmail = email.trim().toLowerCase();
-    const existing = await Users.findOne({ email: { $regex: `^${normalizedEmail}$`, $options: 'i' } });
+    const existing = await Users.findOne({
+      email: {
+        $regex: `^${normalizedEmail}$`,
+        $options: 'i'
+      }
+    });
     if (existing)
-      return res.status(409).json({ message: 'Impossibile completare la registrazione' });
+      return res.status(409).json({
+        message: 'Impossibile completare la registrazione'
+      });
 
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new Users({
@@ -111,7 +159,9 @@ app.post('/api/users/register', async (req, res) => {
     });
   } catch (err) {
     console.error('Errore registrazione:', err);
-    res.status(500).json({ message: 'Errore interno durante la registrazione' });
+    res.status(500).json({
+      message: 'Errore interno durante la registrazione'
+    });
   }
 });
 
@@ -125,7 +175,9 @@ app.get('/api/users', async (req, res) => {
     const users = await Users.find({}, 'username email municipalityId');
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
@@ -137,7 +189,9 @@ app.get('/api/users/:userId/deceased', async (req, res) => {
     });
     res.json(deceased);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
@@ -150,17 +204,23 @@ app.get('/api/Cemeteries', async (req, res) => {
     const cemeteries = await Cemetery.find();
     res.json(cemeteries);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.get('/api/Cemeteries/:id', async (req, res) => {
   try {
     const cemetery = await Cemetery.findById(req.params.id);
-    if (!cemetery) return res.status(404).json({ message: 'Cimitero non trovato' });
+    if (!cemetery) return res.status(404).json({
+      message: 'Cimitero non trovato'
+    });
     res.json(cemetery);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
@@ -170,7 +230,9 @@ app.post('/api/Cemeteries', async (req, res) => {
     const saved = await cemetery.save();
     res.status(201).json(saved);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({
+      message: err.message
+    });
   }
 });
 
@@ -178,13 +240,21 @@ app.post('/api/Cemeteries', async (req, res) => {
 app.get('/api/Cemeteries/:id/Deceased', async (req, res) => {
   try {
     const cemetery = await Cemetery.findById(req.params.id);
-    if (!cemetery) return res.status(404).json({ message: 'Cimitero non trovato' });
+    if (!cemetery) return res.status(404).json({
+      message: 'Cimitero non trovato'
+    });
 
-    const tombstones = await Tombstones.find({ cemeteryId: req.params.id });
+    const tombstones = await Tombstones.find({
+      cemeteryId: req.params.id
+    });
     if (tombstones.length === 0) return res.json([]);
 
     const tombstoneIds = tombstones.map(t => t._id.toString());
-    const deceased = await Deceased.find({ graveId: { $in: tombstoneIds } }).populate('assignedUsers');
+    const deceased = await Deceased.find({
+      graveId: {
+        $in: tombstoneIds
+      }
+    }).populate('assignedUsers');
 
     const enriched = deceased.map(d => {
       const tombstone = tombstones.find(t => t._id.toString() === d.graveId);
@@ -201,7 +271,9 @@ app.get('/api/Cemeteries/:id/Deceased', async (req, res) => {
 
     res.json(enriched);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
@@ -216,7 +288,9 @@ app.get('/api/Deceaseds', async (req, res) => {
     const deceased = await Deceased.find(filter).populate('assignedUsers', 'email fullName');
     res.json(deceased);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
@@ -235,42 +309,70 @@ app.patch('/api/Deceaseds/:id', async (req, res) => {
       }
     });
 
-    const deceased = await Deceased.findByIdAndUpdate(req.params.id, update, { new: true }).populate('assignedUsers', 'email fullName');
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    const deceased = await Deceased.findByIdAndUpdate(req.params.id, update, {
+      new: true
+    }).populate('assignedUsers', 'email fullName');
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
     res.json(deceased);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.delete('/api/Deceaseds/:id', async (req, res) => {
   try {
     const deceased = await Deceased.findByIdAndDelete(req.params.id);
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
 
     if (deceased.assignedUsers && deceased.assignedUsers.length) {
-      await Users.updateMany(
-        { _id: { $in: deceased.assignedUsers } },
-        { $pull: { assignedDeceased: deceased._id } }
-      );
+      await Users.updateMany({
+        _id: {
+          $in: deceased.assignedUsers
+        }
+      }, {
+        $pull: {
+          assignedDeceased: deceased._id
+        }
+      });
     }
 
-    res.json({ message: 'Defunto eliminato' });
+    res.json({
+      message: 'Defunto eliminato'
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.patch('/api/Deceaseds/:id/assign', async (req, res) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
-    if (!email) return res.status(400).json({ message: 'Email richiesta' });
+    if (!email) return res.status(400).json({
+      message: 'Email richiesta'
+    });
 
-    const user = await Users.findOne({ email: { $regex: `^${email}$`, $options: 'i' } });
-    if (!user) return res.status(404).json({ message: 'Utente non trovato' });
+    const user = await Users.findOne({
+      email: {
+        $regex: `^${email}$`,
+        $options: 'i'
+      }
+    });
+    if (!user) return res.status(404).json({
+      message: 'Utente non trovato'
+    });
 
     const deceased = await Deceased.findById(req.params.id);
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
 
     const userId = user._id;
     if (!deceased.assignedUsers.some((id) => id.equals(userId))) {
@@ -286,20 +388,33 @@ app.patch('/api/Deceaseds/:id/assign', async (req, res) => {
     const updated = await Deceased.findById(req.params.id).populate('assignedUsers', 'email fullName');
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.patch('/api/Deceaseds/:id/unassign', async (req, res) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
-    if (!email) return res.status(400).json({ message: 'Email richiesta' });
+    if (!email) return res.status(400).json({
+      message: 'Email richiesta'
+    });
 
-    const user = await Users.findOne({ email: { $regex: `^${email}$`, $options: 'i' } });
-    if (!user) return res.status(404).json({ message: 'Utente non trovato' });
+    const user = await Users.findOne({
+      email: {
+        $regex: `^${email}$`,
+        $options: 'i'
+      }
+    });
+    if (!user) return res.status(404).json({
+      message: 'Utente non trovato'
+    });
 
     const deceased = await Deceased.findById(req.params.id);
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
 
     deceased.assignedUsers = deceased.assignedUsers.filter((id) => !id.equals(user._id));
     await deceased.save();
@@ -310,41 +425,64 @@ app.patch('/api/Deceaseds/:id/unassign', async (req, res) => {
     const updated = await Deceased.findById(req.params.id).populate('assignedUsers', 'email fullName');
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.get('/api/Deceaseds/search', async (req, res) => {
   try {
     const name = req.query.name;
-    if (!name) return res.status(400).json({ message: 'Nome richiesto' });
+    if (!name) return res.status(400).json({
+      message: 'Nome richiesto'
+    });
     const deceased = await Deceased.find({
-      fullName: { $regex: name, $options: 'i' }
+      fullName: {
+        $regex: name,
+        $options: 'i'
+      }
     }).populate('assignedUsers');
     res.json(deceased);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.get('/api/Deceaseds/:id', async (req, res) => {
   try {
     const deceased = await Deceased.findById(req.params.id).populate('assignedUsers');
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
     res.json(deceased);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.post('/api/Deceaseds', async (req, res) => {
   try {
-    const { fullName, birthDate, deathDate, deceasedImage, assignedUsers } = req.body;
+    const {
+      fullName,
+      birthDate,
+      deathDate,
+      deceasedImage,
+      assignedUsers
+    } = req.body;
     if (!fullName || !birthDate || !deathDate)
-      return res.status(400).json({ message: 'Nome, data nascita e data morte sono obbligatori' });
+      return res.status(400).json({
+        message: 'Nome, data nascita e data morte sono obbligatori'
+      });
 
     const deceased = new Deceased({
-      fullName, birthDate, deathDate,
+      fullName,
+      birthDate,
+      deathDate,
       deceasedImage: deceasedImage || '',
       assignedUsers: assignedUsers || [],
       images: [],
@@ -353,66 +491,110 @@ app.post('/api/Deceaseds', async (req, res) => {
     const saved = await deceased.save();
     res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.patch('/api/Deceaseds/:id/story', async (req, res) => {
   try {
     const deceased = await Deceased.findByIdAndUpdate(
-      req.params.id, { $set: { story: req.body.story } }, { new: true }
+      req.params.id, {
+        $set: {
+          story: req.body.story
+        }
+      }, {
+        new: true
+      }
     );
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
     res.json(deceased);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.patch('/api/Deceaseds/:id/epitaph', async (req, res) => {
   try {
     const deceased = await Deceased.findByIdAndUpdate(
-      req.params.id, { $set: { biography: req.body.epitaph } }, { new: true }
+      req.params.id, {
+        $set: {
+          biography: req.body.epitaph
+        }
+      }, {
+        new: true
+      }
     );
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
     res.json(deceased);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.post('/api/Deceaseds/:id/photos', async (req, res) => {
   try {
     const deceased = await Deceased.findByIdAndUpdate(
-      req.params.id, { $push: { images: req.body.photo } }, { new: true }
+      req.params.id, {
+        $push: {
+          images: req.body.photo
+        }
+      }, {
+        new: true
+      }
     );
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
     res.json(deceased.images);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.delete('/api/Deceaseds/:id/photos/:index', async (req, res) => {
   try {
     const deceased = await Deceased.findById(req.params.id);
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
     deceased.images.splice(Number(req.params.index), 1);
     await deceased.save();
     res.json(deceased.images);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.post('/api/Deceaseds/:id/memories', async (req, res) => {
   try {
-    const { author, message, type } = req.body;
+    const {
+      author,
+      message,
+      type
+    } = req.body;
     if (!author || !message)
-      return res.status(400).json({ message: 'Autore e messaggio sono obbligatori' });
+      return res.status(400).json({
+        message: 'Autore e messaggio sono obbligatori'
+      });
 
     const deceased = await Deceased.findById(req.params.id);
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
 
     const newMemory = {
       id: new mongoose.Types.ObjectId().toString(),
@@ -427,19 +609,25 @@ app.post('/api/Deceaseds/:id/memories', async (req, res) => {
     await deceased.save();
     res.status(201).json(deceased.memories);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
 app.delete('/api/Deceaseds/:id/memories/:memoryId', async (req, res) => {
   try {
     const deceased = await Deceased.findById(req.params.id);
-    if (!deceased) return res.status(404).json({ message: 'Defunto non trovato' });
+    if (!deceased) return res.status(404).json({
+      message: 'Defunto non trovato'
+    });
     deceased.memories = (deceased.memories || []).filter(m => m.id !== req.params.memoryId);
     await deceased.save();
     res.json(deceased.memories);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 });
 
