@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../Services/auth.service';
 import { NavbarComponent } from "../navbar/navbar.component";
 import { FooterComponent } from "../footer/footer.component";
+import { environment } from '../../../Environments/environments';
 
 @Component({
   selector: 'app-deceased-profile',
@@ -17,7 +18,7 @@ import { FooterComponent } from "../footer/footer.component";
 export class DeceasedProfileComponent implements OnInit {
   deceased: any = null;
   loading = true;
-  private API = 'http://localhost:3000/api';
+  private API = `${environment.apiUrl}/api`;
 
   // UI state
   activeTab: 'storia' | 'foto' | 'memorie' = 'storia';

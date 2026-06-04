@@ -7,6 +7,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { AuthService } from '../../Services/auth.service';
 import { NotificationService } from '../../Services/notification.service';
+import { environment } from '../../../Environments/environments';
 
 @Component({
   selector: 'app-employee-dashboard',
@@ -16,7 +17,7 @@ import { NotificationService } from '../../Services/notification.service';
   styleUrls: ['./employee-dashboard.component.scss']
 })
 export class EmployeeDashboardComponent implements OnInit {
-  readonly API = 'http://localhost:3000/api';
+  readonly API = `${environment.apiUrl}/api`;
   deceased: any[] = [];
   loading = true;
   isSaving = false;
