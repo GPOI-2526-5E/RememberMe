@@ -3,7 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const Cemetery = require('./Models/Cemetery');
 const Deceased = require('./Models/Deceased');
 const Employees = require('./Models/Employees');
@@ -13,7 +12,11 @@ const Users = require('./Models/Users');
 const nodemailer = require('nodemailer');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://remember-me-ycog.vercel.app",
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use(express.json({ limit: '10mb' })); // ✅ limit per le foto base64
 
 let isConnected = false;

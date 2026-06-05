@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 import { Cemetery } from '../Interfaces/Cemetery';
 import { Deceased } from '../Interfaces/Deceased';
 import { Memory } from '../Interfaces/Memory';
-import { environment } from '../../Environments/environments'
+import { environment } from '../../Environments/environment'
 
 @Injectable({
   providedIn: 'root'
