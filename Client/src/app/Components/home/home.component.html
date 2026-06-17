@@ -63,7 +63,7 @@
             <div class="card-body d-flex flex-column">
               <h5 class="card-title">{{ cem.name }}</h5>
               <p>
-                {{ cem.city || cem.location }}
+                {{ cem.city || cem.address || '' }}
                 <span *ngIf="cem.distance" class="distance-badge">{{ (cem.distance | number:'1.1-1') }} km</span>
               </p>
               <p class="card-text flex-grow-1">{{ cem.description }}</p>

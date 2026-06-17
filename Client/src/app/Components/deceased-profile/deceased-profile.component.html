@@ -35,7 +35,12 @@
                     </div>
                 </div>
 
-                <h1 class="hero-name">{{ deceased.fullName }}</h1>
+                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <h1 class="hero-name" style="margin: 0;">{{ deceased.fullName }}</h1>
+                    <button *ngIf="authService.isLoggedIn()" (click)="toggleFavorite()" [title]="isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #ff4466; transition: transform 0.2s; padding: 0;">
+                        <i class="bi" [class.bi-heart-fill]="isFavorite" [class.bi-heart]="!isFavorite"></i>
+                    </button>
+                </div>
                 <div class="hero-dates">
                     <span><i class="bi bi-star"></i> {{ deceased.birthDate | date:'dd MMMM yyyy' }}</span>
                     <span class="dates-sep">✦</span>

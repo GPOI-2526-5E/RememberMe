@@ -28,19 +28,20 @@ export class CemeteryService {
   }
 
   private processCemeteryData(cemetery: any): Cemetery {
-  // Se ha la struttura { lat, lng }, estrai i valori
-  if (cemetery.location && typeof cemetery.location === 'object' && cemetery.location.coordinates) {
-    const { lat, lng } = cemetery.location.coordinates;
-    return {
-      ...cemetery,
-      lat,
-      lng
-    };
+    if (cemetery.location && typeof cemetery.location === 'object') {
+      const coordinates = cemetery.location.coordinates || {};
+      const { lat = 0, lng = 0 } = coordinates;
+      return {
+        ...cemetery,
+        city: cemetery.city || cemetery.location.city || '',
+        address: cemetery.address || cemetery.location.address || '',
+        country: cemetery.country || cemetery.location.country || '',
+        lat,
+        lng
+      };
+    }
+    return cemetery;
   }
-
-  // Altrimenti mantieni la struttura esistente
-  return cemetery;
-}
 
   getDeceasedByCemetery(cemeteryId: string): Observable<Deceased[]> {
     return this.http.get<Deceased[]>(`${this.apiUrl}/${cemeteryId}/Deceased`);

@@ -6,6 +6,9 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
 import { NotificationService } from '../../Services/notification.service';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../Services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-change-password',
@@ -317,7 +320,9 @@ export class ChangePasswordComponent implements OnInit {
 
   constructor(
     private location: Location,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private http: HttpClient,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -361,14 +366,35 @@ export class ChangePasswordComponent implements OnInit {
       return;
     }
 
-    // TODO: Implementare la chiamata API per cambiar la password
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.notification.show('Devi essere loggato per cambiare la password.', 'error');
+      return;
+    }
+
+    const userId = currentUser.userId || currentUser.employeeId;
+    const role = currentUser.role;
+
     this.notification.confirm('Sei sicuro di voler cambiare la password?', 'Cambia Password').then(confirmed => {
       if (confirmed) {
-        // Simula l'API call
-        this.notification.show('Password cambiata con successo', 'success');
-        setTimeout(() => {
-          this.location.back();
-        }, 1500);
+        this.http.post('http://localhost:3000/api/users/change-password', {
+          userId,
+          currentPassword: this.currentPassword,
+          newPassword: this.newPassword,
+          role
+        }).subscribe({
+          next: () => {
+            this.notification.show('Password cambiata con successo', 'success');
+            setTimeout(() => {
+              this.location.back();
+            }, 1500);
+          },
+          error: (err) => {
+            console.error('Errore cambio password:', err);
+            const msg = err.error?.message || 'Errore durante il cambio password';
+            this.notification.show(msg, 'error');
+          }
+        });
       }
     });
   }

@@ -1,6 +1,6 @@
 .report-page {
   max-width: 960px;
-  margin: 24px auto;
+  margin: 100px auto 24px auto;
   padding: 20px;
 }
 
@@ -84,7 +84,7 @@
 }
 
 @media (max-width: 600px) {
-  .report-page { margin: 12px; padding: 12px; }
+  .report-page { margin: 80px 12px 12px 12px; padding: 12px; }
   .report-header h1 { font-size: 1.25rem; }
   .report-form { padding: 12px; }
   .report-form .form-actions { justify-content: stretch; }

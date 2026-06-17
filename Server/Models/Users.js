@@ -14,6 +14,10 @@ const User = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Deceased'
     }],
+  favorites: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Deceased'
+    }],
   municipalityId: String,
 });
 

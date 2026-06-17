@@ -281,6 +281,91 @@ app.post('/api/users/reset-password', async (req, res) => {
   }
 });
 
+// Cambia password da loggato (per user o employee)
+app.post('/api/users/change-password', async (req, res) => {
+  try {
+    const { userId, currentPassword, newPassword, role } = req.body;
+    if (!userId || !currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Dati incompleti' });
+    }
+
+    let account = null;
+    if (role === 'employee') {
+      account = await Employees.findById(userId);
+    } else {
+      account = await Users.findById(userId);
+    }
+
+    if (!account) {
+      account = await Users.findById(userId) || await Employees.findById(userId);
+    }
+
+    if (!account) {
+      return res.status(404).json({ message: 'Utente non trovato' });
+    }
+
+    const valid = await bcrypt.compare(currentPassword, account.passwordHash || '');
+    if (!valid) {
+      return res.status(401).json({ message: 'Password attuale non valida' });
+    }
+
+    account.passwordHash = await bcrypt.hash(newPassword, 10);
+    await account.save();
+    res.json({ message: 'Password cambiata con successo' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Ottieni preferiti
+app.get('/api/users/:userId/favorites', async (req, res) => {
+  try {
+    const user = await Users.findById(req.params.userId).populate('favorites');
+    if (!user) return res.status(404).json({ message: 'Utente non trovato' });
+    res.json(user.favorites || []);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Aggiungi a preferiti
+app.post('/api/users/:userId/favorites', async (req, res) => {
+  try {
+    const { deceasedId } = req.body;
+    if (!deceasedId) return res.status(400).json({ message: 'ID defunto richiesto' });
+    const user = await Users.findById(req.params.userId);
+    if (!user) return res.status(404).json({ message: 'Utente non trovato' });
+
+    if (!user.favorites) {
+      user.favorites = [];
+    }
+
+    if (!user.favorites.some(id => id.toString() === deceasedId)) {
+      user.favorites.push(deceasedId);
+      await user.save();
+    }
+    res.json(user.favorites);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Rimuovi dai preferiti
+app.delete('/api/users/:userId/favorites/:deceasedId', async (req, res) => {
+  try {
+    const user = await Users.findById(req.params.userId);
+    if (!user) return res.status(404).json({ message: 'Utente non trovato' });
+
+    if (user.favorites) {
+      user.favorites = user.favorites.filter(id => id.toString() !== req.params.deceasedId);
+      await user.save();
+    }
+    res.json(user.favorites || []);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // ════════════════════════════════════════════════════════
 //  USERS
 // ════════════════════════════════════════════════════════
@@ -298,8 +383,14 @@ app.get('/api/users', async (req, res) => {
 // Defunti assegnati a uno user
 app.get('/api/users/:userId/deceased', async (req, res) => {
   try {
+    const user = await Users.findById(req.params.userId);
+    const userDeceasedIds = user ? user.assignedDeceased || [] : [];
+    
     const deceased = await Deceased.find({
-      assignedUsers: new mongoose.Types.ObjectId(req.params.userId)
+      $or: [
+        { assignedUsers: new mongoose.Types.ObjectId(req.params.userId) },
+        { _id: { $in: userDeceasedIds } }
+      ]
     });
     res.json(deceased);
   } catch (err) {

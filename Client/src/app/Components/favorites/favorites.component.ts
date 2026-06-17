@@ -4,8 +4,10 @@ import { Location } from '@angular/common';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CookieBannerComponent } from '../cookie-banner/cookie-banner.component';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { NotificationService } from '../../Services/notification.service';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../Services/auth.service';
 
 interface Favorite {
   id: string;
@@ -31,7 +33,7 @@ interface Favorite {
         <div class="header-spacer"></div>
       </header>
 
-      <div class="container">
+      <div class="container" *ngIf="isLoggedIn; else loginPrompt">
         <div class="tabs-container">
           <button 
             class="tab-btn" 
@@ -43,6 +45,7 @@ interface Favorite {
           <button 
             class="tab-btn" 
             [class.active]="activeTab === 'cemetery'"
+            [style.display]="'none'"
             (click)="activeTab = 'cemetery'">
             <i class="bi bi-building"></i>
             Cimiteri Preferiti ({{ cemeteryFavorites.length }})
@@ -111,6 +114,17 @@ interface Favorite {
           </div>
         </div>
       </div>
+
+      <ng-template #loginPrompt>
+        <div class="container py-5 text-center">
+          <div class="login-prompt-card glass-card p-5" style="max-width: 500px; margin: 0 auto; border-radius: 12px; background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+            <i class="bi bi-lock" style="font-size: 4rem; color: var(--cyan-glow); opacity: 0.8; display: block; margin-bottom: 20px;"></i>
+            <h3 class="mb-3">Accedi per visualizzare i preferiti</h3>
+            <p class="opacity-70 mb-4">La lista dei defunti preferiti è riservata agli utenti che hanno effettuato l'accesso.</p>
+            <button class="btn btn-blue px-4 py-2" (click)="goToLogin()" style="background: linear-gradient(135deg, #00ffff, #0088ff); color: #000; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">Accedi</button>
+          </div>
+        </div>
+      </ng-template>
     </div>
     <app-cookie-banner></app-cookie-banner>
     <app-footer></app-footer>
@@ -312,54 +326,70 @@ export class FavoritesComponent implements OnInit {
   activeTab: 'deceased' | 'cemetery' = 'deceased';
   deceasedFavorites: Favorite[] = [];
   cemeteryFavorites: Favorite[] = [];
+  isLoggedIn = false;
 
   constructor(
     private location: Location,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private authService: AuthService,
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.loadFavorites();
+    this.isLoggedIn = this.authService.isLoggedIn();
+    if (this.isLoggedIn) {
+      this.loadFavorites();
+    }
   }
 
   loadFavorites(): void {
-    // TODO: Caricare i preferiti dal backend/localStorage
-    // Dati temporanei per demo
-    this.deceasedFavorites = [
-      {
-        id: '1',
-        type: 'deceased',
-        name: 'Giovanni Battista Della Chiesa',
-        description: 'Notaio di Cuneo, esperto di spicco della borghegia locale',
-        image: '',
-        addedDate: new Date(2026, 0, 15)
-      }
-    ];
+    const user = this.authService.getCurrentUser();
+    if (!user?.userId) return;
 
-    this.cemeteryFavorites = [
-      {
-        id: '1',
-        type: 'cemetery',
-        name: 'Cimitero Monumentale di Cuneo',
-        description: 'Il principale cimitero della città di Cuneo, fondato nel XIX secolo',
-        image: '',
-        addedDate: new Date(2026, 0, 20)
+    this.http.get<any[]>(`http://localhost:3000/api/users/${user.userId}/favorites`).subscribe({
+      next: (data) => {
+        this.deceasedFavorites = data.map(d => ({
+          id: d._id,
+          type: 'deceased',
+          name: d.fullName,
+          description: d.biography || 'Nessuna biografia disponibile',
+          image: d.deceasedImage,
+          addedDate: new Date()
+        }));
+      },
+      error: (err) => {
+        console.error('Errore caricamento preferiti:', err);
+        this.notification.show('Impossibile caricare i preferiti.', 'error');
       }
-    ];
+    });
+
+    this.cemeteryFavorites = [];
   }
 
   removeFavorite(id: string): void {
+    const user = this.authService.getCurrentUser();
+    if (!user?.userId) return;
+
     this.notification.confirm('Rimuovere questo elemento dai preferiti?', 'Rimuovi').then(confirmed => {
       if (confirmed) {
-        if (this.activeTab === 'deceased') {
-          this.deceasedFavorites = this.deceasedFavorites.filter(f => f.id !== id);
-        } else {
-          this.cemeteryFavorites = this.cemeteryFavorites.filter(f => f.id !== id);
-        }
-        this.notification.show('Elemento rimosso dai preferiti', 'success');
+        this.http.delete(`http://localhost:3000/api/users/${user.userId}/favorites/${id}`).subscribe({
+          next: () => {
+            this.deceasedFavorites = this.deceasedFavorites.filter(f => f.id !== id);
+            this.notification.show('Elemento rimosso dai preferiti', 'success');
+          },
+          error: (err) => {
+            console.error('Errore rimozione:', err);
+            this.notification.show('Errore durante la rimozione dei preferiti.', 'error');
+          }
+        });
       }
     });
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/settings']);
   }
 
   goBack(): void {

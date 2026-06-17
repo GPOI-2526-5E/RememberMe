@@ -20,7 +20,10 @@ const Deceased = new mongoose.Schema({
   biography: String,
   story: String,
   isFamous: Boolean,
-  graveId: String,
+  graveId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tombstone'
+  },
   deceasedImage: String,
   images: [String],
   memories: [MemorySchema],

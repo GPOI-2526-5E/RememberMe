@@ -4,7 +4,7 @@ const Employee = new mongoose.Schema({
   fullName: String,
   email: String,
   passwordHash: String,
-  municipalityId: Boolean,
+  municipalityId: String,
 });
 
 module.exports = mongoose.model('Employee', Employee, 'Employees');

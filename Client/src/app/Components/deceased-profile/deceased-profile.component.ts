@@ -48,6 +48,7 @@ export class DeceasedProfileComponent implements OnInit {
           this.storyDraft = data.story || '';
           this.epitaphDraft = data.biography || '';
           this.loading = false;
+          this.checkIfFavorite();
         },
         error: () => this.loading = false
       });
@@ -136,5 +137,42 @@ export class DeceasedProfileComponent implements OnInit {
 
   getMemoryIcon(type: string): string {
     return type === 'prayer' ? 'bi-heart' : type === 'message' ? 'bi-chat' : 'bi-book';
+  }
+
+  isFavorite = false;
+
+  checkIfFavorite(): void {
+    const user = this.authService.getCurrentUser();
+    if (!user?.userId || !this.deceased) return;
+    this.http.get<any[]>(`${this.API}/users/${user.userId}/favorites`).subscribe({
+      next: (favs) => {
+        this.isFavorite = favs.some(f => (f._id || f) === this.deceased._id);
+      }
+    });
+  }
+
+  toggleFavorite(): void {
+    const user = this.authService.getCurrentUser();
+    if (!user?.userId || !this.deceased) {
+      this.notification.show('Accedi per aggiungere questo defunto ai preferiti.', 'warning');
+      return;
+    }
+    if (this.isFavorite) {
+      this.http.delete(`${this.API}/users/${user.userId}/favorites/${this.deceased._id}`).subscribe({
+        next: () => {
+          this.isFavorite = false;
+          this.notification.show('Rimosso dai preferiti', 'success');
+        },
+        error: (err) => console.error('Errore rimozione preferiti:', err)
+      });
+    } else {
+      this.http.post(`${this.API}/users/${user.userId}/favorites`, { deceasedId: this.deceased._id }).subscribe({
+        next: () => {
+          this.isFavorite = true;
+          this.notification.show('Aggiunto ai preferiti', 'success');
+        },
+        error: (err) => console.error('Errore aggiunta preferiti:', err)
+      });
+    }
   }
 }

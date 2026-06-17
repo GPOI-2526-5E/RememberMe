@@ -246,14 +246,14 @@ export class HomeComponent implements OnInit {
   }
 
   private calculateSearchScore(cem: Cemetery, term: string): number {
-    const location = String(cem.location ?? '').toLowerCase();
+    const city = (cem.city || '').toLowerCase();
+    const address = (cem.address || '').toLowerCase();
     const name = cem.name.toLowerCase();
     let score = 0;
 
-    if (location === term) score += 100;
-    if (location.includes(term)) score += 75;
+    if (city === term) score += 100;
+    if (city.includes(term) || address.includes(term)) score += 75;
     if (name.includes(term)) score += 30;
-    if (location.split(' ').some(part => part === term)) score += 20;
 
     return score;
   }

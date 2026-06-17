@@ -8,13 +8,23 @@ import { environment } from '../../Environments/environment';
 export class EmailService {
 
   constructor() {
-    emailjs.init(environment.emailjsPublicKey);
+    if (!this.isDummyConfig()) {
+      emailjs.init(environment.emailjsPublicKey);
+    }
+  }
+
+  private isDummyConfig(): boolean {
+    return !environment.emailjsPublicKey || environment.emailjsPublicKey === 'YOUR_PUBLIC_KEY';
   }
 
   /**
    * Invia email di verifica account dopo la registrazione
    */
   async sendVerificationEmail(toEmail: string, fullName: string, verificationUrl: string): Promise<void> {
+    if (this.isDummyConfig()) {
+      console.warn('✉️ [MOCK EMAIL] Verification Email to:', toEmail, 'Name:', fullName, 'URL:', verificationUrl);
+      return;
+    }
     try {
       await emailjs.send(environment.emailjsServiceId, environment.emailjsVerifyTemplateId, {
         to_email: toEmail,
@@ -32,6 +42,10 @@ export class EmailService {
    * Invia email per il reset della password
    */
   async sendResetPasswordEmail(toEmail: string, fullName: string, resetUrl: string): Promise<void> {
+    if (this.isDummyConfig()) {
+      console.warn('✉️ [MOCK EMAIL] Reset Password Email to:', toEmail, 'Name:', fullName, 'URL:', resetUrl);
+      return;
+    }
     try {
       await emailjs.send(environment.emailjsServiceId, environment.emailjsResetTemplateId, {
         to_email: toEmail,
@@ -49,6 +63,10 @@ export class EmailService {
    * Invia segnalazione problema alle email degli amministratori
    */
   async sendReportEmail(subject: string, message: string, fromEmail: string): Promise<void> {
+    if (this.isDummyConfig()) {
+      console.warn('✉️ [MOCK EMAIL] Report Email Subject:', subject, 'From:', fromEmail, 'Message:', message);
+      return;
+    }
     try {
       await emailjs.send(environment.emailjsServiceId, environment.emailjsReportTemplateId, {
         subject: subject,

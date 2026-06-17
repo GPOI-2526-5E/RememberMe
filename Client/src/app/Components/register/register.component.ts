@@ -19,9 +19,17 @@ import { environment } from '../../../Environments/environment';
 export class RegisterComponent {
   registerEmail = '';
   registerPassword = '';
+  confirmPassword = '';
   registerFullName = '';
   registerUsername = '';
   isSubmitting = false;
+
+  passwordStrength = 0;
+  hasMinLength = false;
+  hasUpperCase = false;
+  hasLowerCase = false;
+  hasNumber = false;
+  hasSpecialChar = false;
 
   constructor(
     private authService: AuthService,
@@ -30,11 +38,46 @@ export class RegisterComponent {
     private router: Router
   ) {}
 
+  checkPasswordStrength(): void {
+    const pwd = this.registerPassword;
+    let strength = 0;
+
+    this.hasMinLength = pwd.length >= 8;
+    this.hasUpperCase = /[A-Z]/.test(pwd);
+    this.hasLowerCase = /[a-z]/.test(pwd);
+    this.hasNumber = /[0-9]/.test(pwd);
+    this.hasSpecialChar = /[!@#$%^&*]/.test(pwd);
+
+    if (this.hasMinLength) strength += 20;
+    if (this.hasUpperCase) strength += 20;
+    if (this.hasLowerCase) strength += 20;
+    if (this.hasNumber) strength += 20;
+    if (this.hasSpecialChar) strength += 20;
+
+    this.passwordStrength = strength;
+  }
+
+  isPasswordValid(): boolean {
+    return (
+      this.hasMinLength &&
+      this.hasUpperCase &&
+      this.hasLowerCase &&
+      this.hasNumber &&
+      this.hasSpecialChar &&
+      this.registerPassword === this.confirmPassword
+    );
+  }
+
   handleRegister(event: Event): void {
     event.preventDefault();
 
     if (!this.registerEmail.trim() || !this.registerPassword.trim() || !this.registerFullName.trim()) {
       this.notification.show('Compila tutti i campi obbligatori prima di procedere.', 'warning');
+      return;
+    }
+
+    if (!this.isPasswordValid()) {
+      this.notification.show('La password non soddisfa i requisiti di sicurezza o non coincide.', 'warning');
       return;
     }
 
