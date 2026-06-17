@@ -6,6 +6,8 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { AuthService } from '../../Services/auth.service';
 import { NotificationService } from '../../Services/notification.service';
+import { EmailService } from '../../Services/email.service';
+import { environment } from '../../../Environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -24,6 +26,7 @@ export class RegisterComponent {
   constructor(
     private authService: AuthService,
     private notification: NotificationService,
+    private emailService: EmailService,
     private router: Router
   ) {}
 
@@ -45,9 +48,21 @@ export class RegisterComponent {
     };
 
     this.authService.register(payload).subscribe({
-      next: () => {
+      next: (res) => {
+        // Invia email di verifica via EmailJS
+        if (res.verificationToken) {
+          const verificationUrl = `${environment.frontendUrl}/verify-email/${res.verificationToken}`;
+          this.emailService.sendVerificationEmail(payload.email, payload.fullName, verificationUrl)
+            .then(() => {
+              this.notification.show('Registrazione completata. Controlla la posta per autenticare il tuo account.', 'success');
+            })
+            .catch(() => {
+              this.notification.show('Registrazione completata, ma errore nell\'invio della mail di verifica. Puoi reinviarla dalla pagina di verifica.', 'warning');
+            });
+        } else {
+          this.notification.show('Registrazione completata.', 'success');
+        }
         this.isSubmitting = false;
-        this.notification.show('Registrazione completata. Controlla la posta per autenticare il tuo account.', 'success');
         this.router.navigate(['/verify-email'], { queryParams: { email: payload.email } });
       },
       error: () => {

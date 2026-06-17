@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../Services/auth.service';
 import { NotificationService } from '../../Services/notification.service';
+import { EmailService } from '../../Services/email.service';
+import { environment } from '../../../Environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +26,8 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private emailService: EmailService
   ) {}
 
   closeModal(): void {
@@ -52,8 +55,20 @@ export class LoginComponent {
     }
 
     this.authService.forgotPassword(email).subscribe({
-      next: () => {
-        this.notification.show('Se l\'email è registrata, hai ricevuto le istruzioni.', 'info');
+      next: (res) => {
+        // Se il server restituisce un resetToken, invia l'email via EmailJS
+        if (res.resetToken) {
+          const resetUrl = `${environment.frontendUrl}/reset-password/${res.resetToken}`;
+          this.emailService.sendResetPasswordEmail(res.email, res.fullName, resetUrl)
+            .then(() => {
+              this.notification.show('Se l\'email è registrata, hai ricevuto le istruzioni per il reset.', 'info');
+            })
+            .catch(() => {
+              this.notification.show('Errore nell\'invio dell\'email. Riprova più tardi.', 'error');
+            });
+        } else {
+          this.notification.show('Se l\'email è registrata, hai ricevuto le istruzioni.', 'info');
+        }
         this.closeForgot();
       },
       error: () => {

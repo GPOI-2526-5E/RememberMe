@@ -5,6 +5,7 @@ import { QrScannerComponent } from './Components/qr-scanner/qr-scanner.component
 import { SettingsComponent } from './Components/settings/settings.component';
 import { ReportProblemComponent } from './Components/settings/report-problem.component';
 import { VerifyEmailComponent } from './Components/settings/verify-email.component';
+import { ResetPasswordComponent } from './Components/settings/reset-password.component';
 import { MapFullscreenComponent } from './Components/map-fullscreen/map-fullscreen.component';
 import { LoginComponent } from './Components/login/login.component';
 import { ParentiComponent } from './Components/relatives/relatives.component';
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'favorites', loadComponent: () => import('./Components/favorites/favorites.component').then(m => m.FavoritesComponent) },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'verify-email/:token', component: VerifyEmailComponent },
+  { path: 'reset-password/:token', component: ResetPasswordComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'parenti', component: ParentiComponent },

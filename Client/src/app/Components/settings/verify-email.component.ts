@@ -6,6 +6,9 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
 import { NotificationService } from '../../Services/notification.service';
+import { AuthService } from '../../Services/auth.service';
+import { EmailService } from '../../Services/email.service';
+import { environment } from '../../../Environments/environment';
 
 @Component({
   selector: 'app-verify-email',
@@ -18,13 +21,15 @@ export class VerifyEmailComponent implements OnInit {
   email = '';
   status: 'pending' | 'success' | 'error' | 'info' = 'pending';
   message = 'Stiamo elaborando la verifica dell\'account...';
-  private api = 'http://localhost:3000/api';
+  private api = environment.apiUrl + '/api';
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private authService: AuthService,
+    private emailService: EmailService
   ) {}
 
   ngOnInit(): void {
@@ -71,11 +76,25 @@ export class VerifyEmailComponent implements OnInit {
     this.status = 'pending';
     this.message = 'Invio del link di verifica in corso...';
 
-    this.http.post<any>(`${this.api}/users/resend-verification`, { email }).subscribe({
+    this.authService.resendVerification(email).subscribe({
       next: (res) => {
-        this.status = 'info';
-        this.message = res.message || 'Link di verifica inviato. Controlla la tua casella di posta.';
-        this.notification.show('Link di verifica reinviato.', 'success');
+        if (res.verificationToken) {
+          // Invia email via EmailJS
+          const verificationUrl = `${environment.frontendUrl}/verify-email/${res.verificationToken}`;
+          this.emailService.sendVerificationEmail(res.email, res.fullName, verificationUrl)
+            .then(() => {
+              this.status = 'info';
+              this.message = 'Link di verifica inviato. Controlla la tua casella di posta.';
+              this.notification.show('Link di verifica reinviato.', 'success');
+            })
+            .catch(() => {
+              this.status = 'error';
+              this.message = 'Errore durante l\'invio dell\'email. Riprova più tardi.';
+            });
+        } else {
+          this.status = 'info';
+          this.message = res.message || 'Link di verifica inviato. Controlla la tua casella di posta.';
+        }
       },
       error: (err) => {
         this.status = 'error';

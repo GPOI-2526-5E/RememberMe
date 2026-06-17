@@ -1,14 +1,14 @@
-﻿require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const Cemetery = require('./Models/Cemetery');
 const Deceased = require('./Models/Deceased');
 const Employees = require('./Models/Employees');
 const Tombstones = require('./Models/Tombstones');
 const Users = require('./Models/Users');
-const nodemailer = require('nodemailer');
 
 const app = express();
 app.use(cors({
@@ -45,83 +45,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Configure nodemailer transporter (set SMTP_* env vars)
-const smtpUser = (process.env.SMTP_USER || process.env.SMTP_USER1 || process.env.SMTP_USER2 || '').trim();
-const smtpPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, '') : undefined;
-let mailTransporter = null;
-if (process.env.SMTP_HOST && smtpUser && smtpPass) {
-  mailTransporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: smtpUser,
-      pass: smtpPass
-    }
-  });
-
-  console.log('SMTP transporter configured with host:', process.env.SMTP_HOST, 'port:', process.env.SMTP_PORT, 'secure:', process.env.SMTP_SECURE, 'user:', smtpUser);
-
-  mailTransporter.verify((error, success) => {
-    if (error) {
-      console.error('SMTP verification failed:', error);
-    } else {
-      console.log('✅ SMTP configurato correttamente. Email pronte per l’invio.');
-    }
-  });
-} else {
-  console.warn('SMTP non configurato. Email sending disabled. Set SMTP_HOST and SMTP_USER or SMTP_USER1 in .env');
-}
-
-async function sendMail(options) {
-  if (!mailTransporter) {
-    throw new Error('SMTP non configurato. Imposta SMTP_HOST e SMTP_USER nel file .env.');
-  }
-
-  const authFrom = smtpUser || process.env.SMTP_USER || process.env.SMTP_USER1 || process.env.SMTP_USER2 || process.env.FROM_EMAIL || 'no-reply@example.com';
-  const mailOptions = {
-    ...options,
-    from: authFrom,
-    replyTo: options.replyTo || options.from || process.env.FROM_EMAIL || authFrom
-  };
-
-  console.log('Invio email:', {
-    from: mailOptions.from,
-    to: mailOptions.to,
-    subject: mailOptions.subject,
-    hasHtml: !!mailOptions.html
-  });
-
-  try {
-    const info = await mailTransporter.sendMail(mailOptions);
-    console.log('Email inviata:', info.messageId);
-    return info;
-  } catch (err) {
-    console.error('Errore invio email:', err);
-    throw err;
-  }
-}
-
 // ════════════════════════════════════════════════════════
-//  DEBUG / AUTH
+//  AUTH
 // ════════════════════════════════════════════════════════
-app.get('/api/debug/smtp', async (req, res) => {
-  try {
-    if (!mailTransporter) {
-      return res.status(500).json({ ok: false, message: 'SMTP non configurato' });
-    }
-
-    mailTransporter.verify((err, success) => {
-      if (err) {
-        return res.status(500).json({ ok: false, message: 'Verifica SMTP fallita', error: err.message });
-      }
-      res.json({ ok: true, message: 'SMTP configurato correttamente', user: smtpUser, host: process.env.SMTP_HOST, port: process.env.SMTP_PORT });
-    });
-  } catch (err) {
-    console.error('Errore debug SMTP:', err);
-    res.status(500).json({ ok: false, message: 'Errore interno debug SMTP' });
-  }
-});
 
 app.post('/api/users', async (req, res) => {
   try {
@@ -210,45 +136,16 @@ app.post('/api/users/register', async (req, res) => {
     });
 
     const saved = await user.save();
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:4200'}/verify-email/${verificationToken}`;
-    let emailSent = true;
 
-    try {
-      await sendMail({
-        to: saved.email,
-        subject: 'Conferma la tua registrazione a RememberMe',
-        text: `Ciao ${saved.fullName},\n\nGrazie per esserti registrato su RememberMe. Per completare la registrazione del tuo account, copia e incolla il link qui sotto nel tuo browser:\n\n${verificationUrl}\n\nSe non hai richiesto questa registrazione, ignora questa email.\n\nCordiali saluti,\nTeam RememberMe`,
-        html: `
-          <div style="font-family: Arial, sans-serif; color: #1f2937; line-height: 1.6;">
-            <h2 style="color: #0b3d91;">Benvenuto su RememberMe, ${saved.fullName}!</h2>
-            <p>Grazie per esserti registrato. Per completare l’attivazione del tuo account, clicca sul pulsante qui sotto:</p>
-            <p style="text-align: center; margin: 30px 0;">
-              <a href="${verificationUrl}" style="text-decoration: none; background: #0b3d91; color: #ffffff; padding: 14px 24px; border-radius: 8px; display: inline-block;">
-                Verifica il tuo account
-              </a>
-            </p>
-            <p>In alternativa, copia e incolla il seguente link nel tuo browser:</p>
-            <p style="word-break: break-all; color: #404040;">${verificationUrl}</p>
-            <p>Se non hai richiesto questa registrazione, ignora semplicemente questa email.</p>
-            <p>Cordiali saluti,<br><strong>Team RememberMe</strong></p>
-          </div>
-        `
-      });
-    } catch (err) {
-      emailSent = false;
-      console.error('Errore invio autenticazione email:', err);
-    }
-
+    // Il token viene restituito al client che invierà la mail via EmailJS
     res.status(201).json({
       _id: saved._id,
       username: saved.username,
       fullName: saved.fullName,
       email: saved.email,
       municipalityId: saved.municipalityId,
-      emailSent,
-      message: emailSent
-        ? 'Registrazione completata. Controlla la posta per confermare il tuo account.'
-        : 'Registrazione completata. Impossibile inviare la mail di verifica, prova a reinviare il link dalla pagina di verifica.'
+      verificationToken: saved.verificationToken,
+      message: 'Registrazione completata. Controlla la posta per confermare il tuo account.'
     });
   } catch (err) {
     console.error('Errore registrazione:', err);
@@ -256,7 +153,6 @@ app.post('/api/users/register', async (req, res) => {
   }
 });
 
-// Endpoint per password dimenticata: invia una mail con istruzioni
 app.get('/api/users/verify/:token', async (req, res) => {
   try {
     const token = req.params.token;
@@ -287,29 +183,16 @@ app.post('/api/users/resend-verification', async (req, res) => {
       user.verificationToken = verificationToken;
       await user.save();
 
-      const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:4200'}/verify-email/${verificationToken}`;
-      await sendMail({
-        to: user.email,
-        subject: 'Reinvio link di verifica RememberMe',
-        text: `Ciao ${user.fullName || user.username},\n\nHai richiesto il reinvio del link di verifica. Per attivare il tuo account, copia e incolla il seguente link nel browser:\n\n${verificationUrl}\n\nSe non hai richiesto questa operazione, ignora questa email.\n\nCordiali saluti,\nTeam RememberMe`,
-        html: `
-          <div style="font-family: Arial, sans-serif; color: #1f2937; line-height: 1.6;">
-            <h2 style="color: #0b3d91;">Reinvio link di verifica</h2>
-            <p>Ciao ${user.fullName || user.username},</p>
-            <p>Hai richiesto di ricevere nuovamente il link per verificare il tuo account RememberMe.</p>
-            <p style="text-align: center; margin: 30px 0;">
-              <a href="${verificationUrl}" style="text-decoration: none; background: #0b3d91; color: #ffffff; padding: 14px 24px; border-radius: 8px; display: inline-block;">
-                Verifica il tuo account</a>
-            </p>
-            <p>In alternativa copia e incolla il link di seguito nel browser:</p>
-            <p style="word-break: break-all; color: #404040;">${verificationUrl}</p>
-            <p>Se non hai richiesto questa operazione, ignora questa email.</p>
-            <p>Cordiali saluti,<br><strong>Team RememberMe</strong></p>
-          </div>
-        `
+      // Restituisce il token al client che invierà la mail via EmailJS
+      return res.json({
+        message: 'Token di verifica generato.',
+        verificationToken,
+        fullName: user.fullName || user.username,
+        email: user.email
       });
     }
 
+    // Per privacy, rispondi ok anche se l'email non esiste
     res.json({ message: 'Se l\'email è registrata e non ancora verificata, il link di verifica è stato reinviato.' });
   } catch (err) {
     console.error('Errore reinvio email verifica:', err);
@@ -322,33 +205,24 @@ app.post('/api/users/forgot', async (req, res) => {
     const email = (req.body.email || '').trim().toLowerCase();
     if (!email) return res.status(400).json({ message: 'Email richiesta' });
 
-    // For privacy, respond ok regardless; attempt to send email if user exists
     const user = await Users.findOne({ email: { $regex: `^${email}$`, $options: 'i' } });
-    const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:4200'}/reset-password`;
 
     if (user) {
-      sendMail({
-        to: user.email,
-        subject: 'Recupero password RememberMe',
-        text: `Ciao ${user.fullName || user.username},\n\nHai richiesto il recupero della password. Per reimpostarla, copia e incolla il seguente link nel browser:\n\n${resetLink}\n\nSe non hai richiesto questa operazione, ignora questa email.\n\nCordiali saluti,\nTeam RememberMe`,
-        html: `
-          <div style="font-family: Arial, sans-serif; color: #1f2937; line-height: 1.6;">
-            <h2 style="color: #0b3d91;">Recupero password RememberMe</h2>
-            <p>Ciao ${user.fullName || user.username},</p>
-            <p>Hai richiesto di ripristinare la tua password. Usa il pulsante qui sotto per iniziare:</p>
-            <p style="text-align: center; margin: 30px 0;">
-              <a href="${resetLink}" style="text-decoration: none; background: #0b3d91; color: #ffffff; padding: 14px 24px; border-radius: 8px; display: inline-block;">
-                Reimposta la password</a>
-            </p>
-            <p>In alternativa copia e incolla il link di seguito nel browser:</p>
-            <p style="word-break: break-all; color: #404040;">${resetLink}</p>
-            <p>Se non hai richiesto questa operazione, ignora questa email.</p>
-            <p>Cordiali saluti,<br><strong>Team RememberMe</strong></p>
-          </div>
-        `
-      }).catch(err => console.error('Errore invio forgot email:', err));
+      const resetToken = crypto.randomBytes(24).toString('hex');
+      user.resetToken = resetToken;
+      user.resetTokenExpiry = new Date(Date.now() + 3600000); // 1 ora
+      await user.save();
+
+      // Restituisce il token al client che invierà la mail via EmailJS
+      return res.json({
+        message: 'Token di reset generato.',
+        resetToken,
+        fullName: user.fullName || user.username,
+        email: user.email
+      });
     }
 
+    // Per privacy, rispondi ok anche se l'email non esiste
     res.json({ message: 'Se l\'email è registrata, sono state inviate istruzioni.' });
   } catch (err) {
     console.error('Errore forgot password:', err);
@@ -356,27 +230,48 @@ app.post('/api/users/forgot', async (req, res) => {
   }
 });
 
-// Endpoint per segnalazioni problemi dall'app
-const reportRecipients = (process.env.REPORT_EMAILS || 'i.cassano.2566@vallauri.edu,d.racca.3256@vallauri.edu')
-  .split(',')
-  .map(email => email.trim())
-  .filter(Boolean);
-
-app.post('/api/report', async (req, res) => {
+// Validazione token di reset password
+app.get('/api/users/reset-password/:token', async (req, res) => {
   try {
-    const { subject, message, from } = req.body;
-    if (!subject || !message) return res.status(400).json({ message: 'Dati mancanti' });
+    const token = req.params.token;
+    if (!token) return res.status(400).json({ message: 'Token mancante' });
 
-    await sendMail({
-      to: reportRecipients.join(','),
-      subject: `Segnalazione App: ${subject}`,
-      text: `Segnalazione inviata da: ${from || 'anonimo'}\n\n${message}`,
-      replyTo: from || process.env.FROM_EMAIL || smtpUser || 'no-reply@example.com'
+    const user = await Users.findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: new Date() }
     });
 
-    res.json({ message: 'Segnalazione inviata' });
+    if (!user) return res.status(400).json({ message: 'Token non valido o scaduto' });
+
+    res.json({ message: 'Token valido', email: user.email });
   } catch (err) {
-    console.error('Errore invio segnalazione:', err);
+    console.error('Errore validazione reset token:', err);
+    res.status(500).json({ message: 'Errore interno' });
+  }
+});
+
+// Reset password con token
+app.post('/api/users/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword)
+      return res.status(400).json({ message: 'Token e nuova password sono richiesti' });
+
+    const user = await Users.findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: new Date() }
+    });
+
+    if (!user) return res.status(400).json({ message: 'Token non valido o scaduto' });
+
+    user.passwordHash = await bcrypt.hash(newPassword, 10);
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+    await user.save();
+
+    res.json({ message: 'Password aggiornata con successo.' });
+  } catch (err) {
+    console.error('Errore reset password:', err);
     res.status(500).json({ message: 'Errore interno' });
   }
 });

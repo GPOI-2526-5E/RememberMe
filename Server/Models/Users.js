@@ -8,6 +8,8 @@ const User = new mongoose.Schema({
   createdBy: String,
   emailVerified: { type: Boolean, default: false },
   verificationToken: String,
+  resetToken: String,
+  resetTokenExpiry: Date,
   assignedDeceased: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Deceased'
